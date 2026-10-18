@@ -1,0 +1,98 @@
+{% extends "cutas_app/base.html" %}
+
+{% block title %}Challenges and Solutions · CUTAS{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
+        <div>
+            <h1 class="text-3xl font-extrabold text-cut-navy tracking-tight">Challenges and Solutions</h1>
+            <p class="text-sm text-slate-600 mt-1">Submit research bottlenecks (Turnitin, funding, thesis writing, lab access) for administrator and mentor intervention.</p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex items-center space-x-3">
+            <a href="{% url 'cutas:challenges_pdf' %}" class="px-4 py-2 bg-cut-navy text-white text-xs font-semibold rounded hover:bg-slate-800 transition-colors flex items-center gap-1.5 shadow-sm">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Download Challenges Log (PDF)
+            </a>
+        </div>
+    </div>
+
+    <!-- Active Scholar's Challenges List -->
+    <div class="space-y-4">
+        {% for ch in challenges %}
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 gap-2">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-bold text-slate-800 uppercase tracking-wider">{{ ch.get_category_display }}</span>
+                        <span class="text-slate-300">·</span>
+                        <span class="text-slate-500">Submitted: {{ ch.created_at|date:"d M Y" }}</span>
+                    </div>
+                    <!-- Status Label -->
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-full {% if ch.status == 'OPEN' %}bg-amber-100 text-amber-800{% elif ch.status == 'IN_REVIEW' %}bg-blue-100 text-blue-800{% else %}bg-emerald-100 text-emerald-800{% endif %}">
+                        {{ ch.get_status_display }}
+                    </span>
+                </div>
+
+                <h3 class="text-base font-bold text-slate-900 mt-3 mb-2">{{ ch.title }}</h3>
+                <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line mb-4">{{ ch.description }}</p>
+            </div>
+
+            <!-- Resolution Block (Filled by Admin) -->
+            {% if ch.resolution_notes %}
+            <div class="p-4 bg-emerald-50/70 rounded-lg border border-emerald-200 text-xs">
+                <span class="font-bold text-emerald-900 block mb-1">Official Resolution & Intervention:</span>
+                <p class="text-emerald-800 leading-relaxed whitespace-pre-line">{{ ch.resolution_notes }}</p>
+                {% if ch.resolved_at %}
+                    <span class="block text-[11px] text-emerald-600 mt-2">Recorded on {{ ch.resolved_at|date:"d M Y, H:i" }}</span>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-500 italic">
+                Awaiting review from CUTAS project leader or assigned faculty mentor.
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="p-8 text-center bg-white rounded-xl border border-slate-200">
+            <p class="text-sm text-slate-500">You have no active research challenges recorded. Submit an issue below if you need institutional support.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Submit Research Problem Form -->
+    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8">
+        <h2 class="text-lg font-bold text-slate-900 mb-1">Submit a Research Problem</h2>
+        <p class="text-xs text-slate-600 mb-4">Confidential submission to the CUT Academic Society steering committee.</p>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Category of Challenge</label>
+                <select name="category" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                    <option value="FUNDING">Funding & Research Grants</option>
+                    <option value="TURNITIN">Turnitin / Plagiarism Similarity Index</option>
+                    <option value="WRITING">Academic Writing & Thesis Structure</option>
+                    <option value="SUPERVISION">Supervision & Advisory Support</option>
+                    <option value="LAB_ACCESS">Laboratory Access & Equipment</option>
+                    <option value="ETHICS">Faculty Ethics Committee Clearance</option>
+                    <option value="DATA_ANALYSIS">Methodology & Statistical Software</option>
+                    <option value="OTHER">Other Academic Challenge</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Problem Subject / Summary</label>
+                <input type="text" name="title" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" placeholder="Brief synopsis of the issue" required>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Detailed Description & Impact on Postgraduate Progress</label>
+                <textarea name="description" rows="5" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" placeholder="Describe the specific bottleneck, steps already attempted, and assistance needed..." required></textarea>
+            </div>
+            <div class="pt-2 flex justify-end">
+                <button type="submit" class="px-5 py-2.5 bg-cut-navy text-white text-xs font-bold rounded hover:bg-slate-800 transition-colors">
+                    Submit Challenge
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

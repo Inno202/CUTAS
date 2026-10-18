@@ -1,0 +1,6 @@
+{
+  "name": "CUTAS - Central University of Technology Academic Society",
+  "description": "Academic society portal for postgraduate scholars at the Central University of Technology (CUT), Free State. Fostering research excellence, publications, funding access, and intellectual leadership across Universities of Technology.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

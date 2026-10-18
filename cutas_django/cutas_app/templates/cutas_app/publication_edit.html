@@ -1,0 +1,67 @@
+{% extends "cutas_app/base.html" %}
+
+{% block title %}Edit Publication · CUTAS{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <div class="pb-4 border-b border-slate-200">
+        <a href="{% url 'cutas:publications' %}" class="text-xs font-semibold text-cut-navy hover:underline">&larr; Back to Publications</a>
+        <h1 class="text-2xl font-bold text-cut-navy mt-2">Edit Publication</h1>
+        <p class="text-xs text-slate-500">{{ publication.title }}</p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Publication Type</label>
+                    <select name="publication_type" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                        <option value="ARTICLE" {% if form.publication_type.value == 'ARTICLE' %}selected{% endif %}>Peer-Reviewed Journal Article</option>
+                        <option value="BOOK_CHAPTER" {% if form.publication_type.value == 'BOOK_CHAPTER' %}selected{% endif %}>Book Chapter</option>
+                        <option value="CONFERENCE" {% if form.publication_type.value == 'CONFERENCE' %}selected{% endif %}>Conference Proceeding</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                    <select name="status" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                        <option value="PUBLISHED" {% if form.status.value == 'PUBLISHED' %}selected{% endif %}>Published</option>
+                        <option value="ACCEPTED" {% if form.status.value == 'ACCEPTED' %}selected{% endif %}>Accepted / In Press</option>
+                        <option value="UNDER_REVIEW" {% if form.status.value == 'UNDER_REVIEW' %}selected{% endif %}>Submitted / Under Review</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Title of Work</label>
+                    <input type="text" name="title" value="{{ form.title.value }}" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Authors</label>
+                    <input type="text" name="authors" value="{{ form.authors.value }}" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Outlet Name</label>
+                    <input type="text" name="outlet_name" value="{{ form.outlet_name.value }}" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Year</label>
+                    <input type="number" name="year" value="{{ form.year.value }}" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Volume, Issue, Pages</label>
+                    <input type="text" name="volume_issue_pages" value="{{ form.volume_issue_pages.value|default:'' }}" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">DOI / URL</label>
+                    <input type="text" name="doi_or_url" value="{{ form.doi_or_url.value|default:'' }}" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white">
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+                <button type="submit" class="px-6 py-2.5 bg-cut-navy text-white text-xs font-bold rounded hover:bg-slate-800 transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

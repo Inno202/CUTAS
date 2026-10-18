@@ -1,0 +1,124 @@
+{% extends "cutas_app/base.html" %}
+
+{% block title %}Publication Record · CUTAS{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
+        <div>
+            <h1 class="text-3xl font-extrabold text-cut-navy tracking-tight">Publication Record</h1>
+            <p class="text-sm text-slate-600 mt-1">Book chapters, peer-reviewed journal articles, and conference proceedings authored during postgraduate studies.</p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex items-center space-x-3">
+            <a href="{% url 'cutas:publications_pdf' %}" class="px-4 py-2 bg-cut-navy text-white text-xs font-semibold rounded hover:bg-slate-800 transition-colors flex items-center gap-1.5 shadow-sm">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Download Publication Record (PDF)
+            </a>
+        </div>
+    </div>
+
+    <!-- Publications List Table -->
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700">Dossier Entries ({{ publications|length }})</h2>
+        </div>
+        <div class="divide-y divide-slate-100">
+            {% for pub in publications %}
+            <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-bold text-blue-900">{{ pub.get_publication_type_display }}</span>
+                        <span class="text-slate-300">·</span>
+                        <span class="text-slate-500">Year: <b>{{ pub.year }}</b></span>
+                        <span class="text-slate-300">·</span>
+                        <span class="font-semibold {% if pub.status == 'PUBLISHED' %}text-emerald-700{% elif pub.status == 'ACCEPTED' %}text-blue-700{% else %}text-amber-700{% endif %}">
+                            {{ pub.get_status_display }}
+                        </span>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 leading-snug">{{ pub.title }}</h3>
+                    <p class="text-xs text-slate-600">Authors: {{ pub.authors }}</p>
+                    <p class="text-xs text-slate-500 italic">{{ pub.outlet_name }}{% if pub.volume_issue_pages %}, {{ pub.volume_issue_pages }}{% endif %}</p>
+                    {% if pub.doi_or_url %}
+                        <a href="{{ pub.doi_or_url }}" target="_blank" rel="noopener noreferrer" class="text-xs text-cut-navy hover:underline block pt-1">
+                            {{ pub.doi_or_url }}
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center space-x-2 flex-shrink-0">
+                    <a href="{% url 'cutas:edit_publication' pub.id %}" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded transition-colors">
+                        Edit
+                    </a>
+                    <form method="POST" action="{% url 'cutas:delete_publication' pub.id %}" onsubmit="return confirm('Are you sure you want to delete this publication record?');" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 rounded transition-colors">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="p-8 text-center">
+                <p class="text-sm text-slate-500">No publications added yet. Use the form below to record your journal articles, chapters, or conference proceedings.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Add Publication Form -->
+    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8">
+        <h2 class="text-lg font-bold text-slate-900 mb-4">Add Publication to Record</h2>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Publication Type</label>
+                    <select name="publication_type" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                        <option value="ARTICLE">Peer-Reviewed Journal Article</option>
+                        <option value="BOOK_CHAPTER">Book Chapter</option>
+                        <option value="CONFERENCE">Conference Proceeding</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                    <select name="status" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                        <option value="PUBLISHED">Published</option>
+                        <option value="ACCEPTED">Accepted / In Press</option>
+                        <option value="UNDER_REVIEW">Submitted / Under Review</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Title of Work</label>
+                    <input type="text" name="title" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" placeholder="Full paper or chapter title" required>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Authors (in citation order)</label>
+                    <input type="text" name="authors" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" placeholder="e.g. Molefe, S., Mthembu, K., & Dlamini, N." required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Journal, Book, or Conference Name</label>
+                    <input type="text" name="outlet_name" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Publication Year</label>
+                    <input type="number" name="year" value="2026" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Volume, Issue, Pages (optional)</label>
+                    <input type="text" name="volume_issue_pages" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" placeholder="Vol. 12, Issue 3, pp. 45-60">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">DOI or Repository Link (optional)</label>
+                    <input type="text" name="doi_or_url" class="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white" placeholder="https://doi.org/10.xxxx/yyyy">
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+                <button type="submit" class="px-5 py-2.5 bg-cut-navy text-white text-xs font-bold rounded hover:bg-slate-800 transition-colors">
+                    + Add Publication
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

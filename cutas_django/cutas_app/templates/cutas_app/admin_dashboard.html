@@ -1,0 +1,196 @@
+{% extends "cutas_app/base.html" %}
+
+{% block title %}Administrator Dashboard & Institutional Governance · CUTAS{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-200">
+        <div>
+            <div class="flex items-center gap-2 text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
+                <span>Executive Steering Committee</span>
+                <span>·</span>
+                <span>Administrative Console</span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-cut-navy tracking-tight">CUTAS Administration & Governance</h1>
+            <p class="text-sm text-slate-600 mt-1">Manage institutional tabs (1, 2, 8, 10), review challenges, and export the yearly analytics report.</p>
+        </div>
+        
+        <div class="mt-4 md:mt-0 flex flex-wrap items-center gap-3">
+            <!-- Yearly Report PDF Export -->
+            <a href="{% url 'cutas:annual_report_pdf' %}" class="px-4 py-2 bg-cut-navy text-white text-xs font-semibold rounded hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-sm">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Generate Yearly Challenges Report (PDF)
+            </a>
+            {% if user.is_super_administrator %}
+            <a href="{% url 'cutas:export_data' %}" target="_blank" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded transition-colors">
+                Export Full DB (JSON)
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Management Cards for Institutional Tabs 1, 2, 8, 10 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Tab 1: About Us -->
+        <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Tab 1 Governance</span>
+                <h3 class="text-base font-bold text-slate-900 mt-1">About Us Content</h3>
+                <p class="text-xs text-slate-500 mt-1">Edit mission, pillars, and CUT institutional history.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100">
+                <a href="{% url 'cutas:edit_content' 'about_us' %}" class="text-xs font-bold text-cut-navy hover:underline">
+                    Edit About Page &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Tab 2: Project Leaders & Admins -->
+        <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Tab 2 Governance</span>
+                <h3 class="text-base font-bold text-slate-900 mt-1">Project Leaders & Admins</h3>
+                <p class="text-xs text-slate-500 mt-1">Update steering committee portfolios and bios.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100">
+                <a href="{% url 'cutas:edit_content' 'project_leaders' %}" class="text-xs font-bold text-cut-navy hover:underline">
+                    Edit Leaders Page &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Tab 8: Funding Available -->
+        <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Tab 8 Governance</span>
+                <h3 class="text-base font-bold text-slate-900 mt-1">Funding & Bursary Calls</h3>
+                <p class="text-xs text-slate-500 mt-1">{{ active_funding_count }} active funding calls published.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <a href="{% url 'cutas:add_funding' %}" class="text-xs font-bold text-cut-navy hover:underline">+ New Grant Call</a>
+                <a href="{% url 'cutas:funding' %}" class="text-xs text-slate-400 hover:text-slate-700">Browse</a>
+            </div>
+        </div>
+
+        <!-- Tab 10: Workshops -->
+        <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Tab 10 Governance</span>
+                <h3 class="text-base font-bold text-slate-900 mt-1">Workshops & Colloquiums</h3>
+                <p class="text-xs text-slate-500 mt-1">{{ workshops_count }} total workshops on record.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <a href="{% url 'cutas:add_workshop' %}" class="text-xs font-bold text-cut-navy hover:underline">+ New Workshop</a>
+                <a href="{% url 'cutas:workshops' %}" class="text-xs text-slate-400 hover:text-slate-700">Browse</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Challenges Queue (Scholars submit research problems; Admin reviews and resolves) -->
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Postgraduate Research Challenges Review Queue</h2>
+                <p class="text-xs text-slate-500">Respond to student research roadblocks, assign resolutions, and transition statuses.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded">{{ open_challenges|length }} Open</span>
+                <span class="text-xs font-bold text-blue-800 bg-blue-100 px-2.5 py-0.5 rounded">{{ in_review_challenges|length }} In Review</span>
+            </div>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+            <!-- Open Challenges -->
+            {% for ch in open_challenges %}
+            <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-amber-50/20">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-bold text-amber-800">OPEN</span>
+                        <span class="text-slate-300">·</span>
+                        <span class="font-semibold text-slate-700">{{ ch.get_category_display }}</span>
+                        <span class="text-slate-300">·</span>
+                        <span class="text-slate-500">Submitted by <b>{{ ch.user.get_full_name }}</b> ({{ ch.user.username }}) on {{ ch.created_at|date:"d M Y" }}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900">{{ ch.title }}</h3>
+                    <p class="text-xs text-slate-700 line-clamp-2">{{ ch.description }}</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="{% url 'cutas:review_challenge' ch.id %}" class="px-4 py-2 bg-cut-navy text-white text-xs font-bold rounded hover:bg-slate-800 transition-colors">
+                        Review & Resolve &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- In Review Challenges -->
+            {% for ch in in_review_challenges %}
+            <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-bold text-blue-800">IN REVIEW</span>
+                        <span class="text-slate-300">·</span>
+                        <span class="font-semibold text-slate-700">{{ ch.get_category_display }}</span>
+                        <span class="text-slate-300">·</span>
+                        <span class="text-slate-500">Scholar: <b>{{ ch.user.get_full_name }}</b></span>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900">{{ ch.title }}</h3>
+                    <p class="text-xs text-slate-600 line-clamp-1">{{ ch.description }}</p>
+                    {% if ch.resolution_notes %}
+                        <p class="text-xs text-blue-900 italic">Intervention in progress: {{ ch.resolution_notes }}</p>
+                    {% endif %}
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="{% url 'cutas:review_challenge' ch.id %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded transition-colors">
+                        Update Resolution
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if not open_challenges and not in_review_challenges %}
+            <div class="p-8 text-center text-xs text-slate-500">
+                All submitted research challenges have been reviewed and resolved!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Security Audit Log (Mandatory Security Spec) -->
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <h2 class="text-base font-bold text-slate-900">Security & Operational Audit Log</h2>
+            <span class="text-xs text-slate-500">Real-time authentication, deletions, and administrative actions</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
+                    <tr>
+                        <th class="px-6 py-3">Timestamp</th>
+                        <th class="px-6 py-3">Action</th>
+                        <th class="px-6 py-3">Actor & Role</th>
+                        <th class="px-6 py-3">Target</th>
+                        <th class="px-6 py-3">Details</th>
+                        <th class="px-6 py-3">IP</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for log in audit_logs %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-3 whitespace-nowrap text-slate-500 tabular-nums">{{ log.timestamp|date:"Y-m-d H:i" }}</td>
+                        <td class="px-6 py-3 whitespace-nowrap font-bold text-slate-900">{{ log.get_action_display }}</td>
+                        <td class="px-6 py-3 whitespace-nowrap">{{ log.actor_username }} <span class="text-slate-400">({{ log.actor_role }})</span></td>
+                        <td class="px-6 py-3 whitespace-nowrap text-slate-500">{{ log.target_object|default:"-" }}</td>
+                        <td class="px-6 py-3 text-slate-600 max-w-xs truncate">{{ log.details }}</td>
+                        <td class="px-6 py-3 whitespace-nowrap font-mono text-slate-400 text-[11px]">{{ log.ip_address|default:"127.0.0.1" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-slate-400">No audit events recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
