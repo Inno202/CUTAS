@@ -32,25 +32,25 @@ export const PdfModal: React.FC<PdfModalProps> = ({ document, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl overflow-hidden my-4 sm:my-8 border border-slate-300 flex flex-col max-h-[92vh]">
+      <div className="bg-white w-full max-w-4xl rounded-[6px] shadow-2xl overflow-hidden my-4 sm:my-8 border border-slate-300 flex flex-col max-h-[92vh]">
         {/* Modal Toolbar (hidden during print) */}
-        <div className="bg-[#003261] text-white px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 no-print border-b-2 border-[#FBB927] flex-shrink-0">
+        <div className="bg-[#255190] text-white px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 no-print border-b-2 border-[#FDB813] flex-shrink-0">
           <div className="flex items-center space-x-2 min-w-0">
-            <span className="text-[10px] sm:text-xs uppercase font-bold text-[#FBB927] tracking-wider flex-shrink-0">Official Academic Document</span>
+            <span className="text-[10px] sm:text-xs uppercase font-bold text-[#FDB813] tracking-wider flex-shrink-0">Official Academic Document</span>
             <span className="text-slate-400 hidden sm:inline">·</span>
             <span className="text-xs text-slate-200 truncate hidden sm:inline">{document.title}</span>
           </div>
           <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 bg-[#FBB927] hover:bg-amber-400 text-slate-900 font-bold text-xs rounded flex items-center gap-1.5 shadow transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 bg-[#FDB813] hover:bg-[#e5a610] text-slate-900 font-bold text-xs rounded-[4px] flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               Print / Save as PDF
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-300 hover:text-white rounded hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-1.5 text-slate-300 hover:text-white rounded-[4px] hover:bg-white/10 transition-colors cursor-pointer"
               aria-label="Close document"
             >
               <X className="w-5 h-5" />
@@ -61,9 +61,9 @@ export const PdfModal: React.FC<PdfModalProps> = ({ document, onClose }) => {
         {/* Printable Academic Letterhead Body */}
         <div className="p-4 sm:p-8 md:p-12 overflow-y-auto text-slate-900 bg-white space-y-6 print:p-0 print:m-0 font-sans">
           {/* Institutional Header */}
-          <div className="flex items-start justify-between border-b-2 border-[#003261] pb-6">
+          <div className="flex items-start justify-between border-b-2 border-[#255190] pb-6">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded bg-white p-1 border border-slate-200 shadow-sm flex items-center justify-center">
+              <div className="w-16 h-16 rounded-[4px] bg-white p-1 border border-slate-200 shadow-xs flex items-center justify-center">
                 <img
                   src={crestImage}
                   alt="CUTAS Crest"
@@ -72,10 +72,10 @@ export const PdfModal: React.FC<PdfModalProps> = ({ document, onClose }) => {
                 />
               </div>
               <div>
-                <span className="text-[11px] font-bold text-[#003261] uppercase tracking-wider block">
+                <span className="text-[11px] font-bold text-[#255190] uppercase tracking-wider block">
                   Central University of Technology, Free State
                 </span>
-                <h1 className="text-xl font-extrabold text-[#003261] tracking-tight">
+                <h1 className="text-xl font-bold text-[#255190] tracking-tight">
                   Central University of Technology Academic Society (CUTAS)
                 </h1>
                 <p className="text-xs text-slate-500 italic mt-0.5">
@@ -107,13 +107,13 @@ export const PdfModal: React.FC<PdfModalProps> = ({ document, onClose }) => {
             {document.sections.map((section, idx) => (
               <div key={idx} className="space-y-3">
                 {section.heading && (
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#003261] border-b border-slate-200 pb-1">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#255190] border-b border-slate-200 pb-1">
                     {section.heading}
                   </h3>
                 )}
 
                 {section.fields && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-[4px] border border-slate-200">
                     {section.fields.map((f, fIdx) => (
                       <div key={fIdx}>
                         <span className="text-[10px] uppercase font-bold text-slate-500 block">{f.label}</span>
@@ -124,15 +124,15 @@ export const PdfModal: React.FC<PdfModalProps> = ({ document, onClose }) => {
                 )}
 
                 {section.content && (
-                  <div className="text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50/50 p-4 rounded border border-slate-200">
+                  <div className="text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50/50 p-4 rounded-[4px] border border-slate-200">
                     {section.content}
                   </div>
                 )}
 
                 {section.table && (
-                  <div className="overflow-x-auto border border-slate-200 rounded-lg">
+                  <div className="overflow-x-auto border border-slate-200 rounded-[4px]">
                     <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-[#003261] text-white uppercase text-[10px] tracking-wider font-bold">
+                      <thead className="bg-[#255190] text-white uppercase text-[10px] tracking-wider font-bold">
                         <tr>
                           {section.table.headers.map((h, hIdx) => (
                             <th key={hIdx} className="px-3 py-2 border-r border-blue-900 last:border-none">
@@ -162,12 +162,12 @@ export const PdfModal: React.FC<PdfModalProps> = ({ document, onClose }) => {
           {/* Official Stamp & Signoff Block */}
           <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
             <div>
-              <div className="font-bold text-[#003261]">Central University of Technology Academic Society</div>
+              <div className="font-bold text-[#255190]">Central University of Technology Academic Society</div>
               <div>Directorate of Research Development & Postgraduate Studies</div>
               <div className="text-[10px] text-slate-400">Bloemfontein Campus · Welkom Campus</div>
             </div>
 
-            <div className="border border-slate-300 rounded p-2 text-center text-[10px] w-48 bg-slate-50">
+            <div className="border border-slate-300 rounded-[4px] p-2 text-center text-[10px] w-48 bg-slate-50">
               <span className="font-bold text-slate-700 block uppercase">CUTAS Institutional Seal</span>
               <span className="text-emerald-700 font-semibold block">AUTHENTICATED RECORD</span>
               <span className="text-slate-400 block">{document.dateGenerated}</span>

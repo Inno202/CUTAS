@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Publication, PublicationType, PublicationStatus } from '../types';
+import { PageHeader, PageHeaderButton } from '../components/PageHeader';
 import { FileDown, Plus, Trash2, Edit3, BookOpen, ExternalLink, CheckCircle } from 'lucide-react';
 
 interface PublicationsPageProps {
@@ -86,48 +87,40 @@ export const PublicationsPage: React.FC<PublicationsPageProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
-        <div>
-          <div className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-            DHET Accredited Scholarly Outputs
-          </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#003261] tracking-tight">
-            Publication Record
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Book chapters, peer-reviewed journal articles, and conference proceedings authored during your studies.
-          </p>
-        </div>
-
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <button
-            onClick={onDownloadPdf}
-            className="px-4 py-2 bg-[#003261] hover:bg-[#002244] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <FileDown className="w-4 h-4 text-[#FBB927]" />
-            Download Publication Record (PDF)
-          </button>
-          <button
-            onClick={() => {
-              if (showAddForm) resetForm();
-              else {
-                resetForm();
-                setShowAddForm(true);
-              }
-            }}
-            className="px-4 py-2 bg-[#FBB927] hover:bg-amber-400 text-slate-900 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            {showAddForm ? 'Close Form' : 'Add Publication'}
-          </button>
-        </div>
-      </div>
+    <div className="max-w-5xl mx-auto space-y-6">
+      <PageHeader
+        eyebrow="DHET Accredited Scholarly Outputs"
+        title="Publication Record"
+        description="Book chapters, peer-reviewed journal articles, and conference proceedings authored during your studies."
+        actions={
+          <>
+            <PageHeaderButton
+              variant="accent"
+              onClick={() => {
+                if (showAddForm) resetForm();
+                else {
+                  resetForm();
+                  setShowAddForm(true);
+                }
+              }}
+              icon={<Plus className="w-4 h-4" />}
+            >
+              {showAddForm ? 'Close Form' : 'Add Publication'}
+            </PageHeaderButton>
+            <PageHeaderButton
+              variant="secondary"
+              onClick={onDownloadPdf}
+              icon={<FileDown className="w-4 h-4" />}
+            >
+              Download Publication Record (PDF)
+            </PageHeaderButton>
+          </>
+        }
+      />
 
       {/* Add / Edit Publication Form */}
       {showAddForm && (
-        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-slate-50 border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-xs">
           <h2 className="text-base font-bold text-slate-900 mb-1">
             {editingPubId ? 'Edit Publication Record' : 'Record New Scholarly Publication'}
           </h2>
@@ -245,7 +238,7 @@ export const PublicationsPage: React.FC<PublicationsPageProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#003261] text-white rounded text-xs font-bold hover:bg-[#002244] transition-colors cursor-pointer"
+                className="px-5 py-2 bg-[#255190] hover:bg-[#183765] text-white rounded-[4px] text-xs font-semibold transition-colors cursor-pointer"
               >
                 {editingPubId ? 'Save Changes' : '+ Add to Dossier'}
               </button>
@@ -255,9 +248,9 @@ export const PublicationsPage: React.FC<PublicationsPageProps> = ({
       )}
 
       {/* Publications List */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-[6px] border border-[#E2E8F0] overflow-hidden shadow-xs">
         <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-          <span className="font-bold uppercase tracking-wider text-slate-700">
+          <span className="font-semibold uppercase tracking-wider text-slate-700">
             Recorded Outputs ({publications.length})
           </span>
         </div>
@@ -270,11 +263,11 @@ export const PublicationsPage: React.FC<PublicationsPageProps> = ({
             >
               <div className="space-y-1.5 flex-1">
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="font-bold text-[#003261]">{pub.publicationType.replace('_', ' ')}</span>
+                  <span className="font-semibold text-[#255190]">{pub.publicationType.replace('_', ' ')}</span>
                   <span className="text-slate-300">·</span>
                   <span className="text-slate-500">Year: <b>{pub.year}</b></span>
                   <span className="text-slate-300">·</span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${getStatusBadge(pub.status)}`}>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-[4px] ${getStatusBadge(pub.status)}`}>
                     {pub.status.replace('_', ' ')}
                   </span>
                 </div>

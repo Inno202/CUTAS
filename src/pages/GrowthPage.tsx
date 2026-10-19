@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, GrowthSuggestion, GrowthCompetency } from '../types';
+import { PageHeader, PageHeaderButton } from '../components/PageHeader';
 import { FileDown, Plus, Target, CheckCircle2, Clock } from 'lucide-react';
 
 interface GrowthPageProps {
@@ -40,42 +41,34 @@ export const GrowthPage: React.FC<GrowthPageProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
-        <div>
-          <div className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-            Individual Scholar Development Plan
-          </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#003261] tracking-tight">
-            Suggestions for Your Growth
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Scholar-populated milestones, targeted research competencies, and timeline commitments.
-          </p>
-        </div>
-
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <button
-            onClick={onDownloadPdf}
-            className="px-4 py-2 bg-[#003261] hover:bg-[#002244] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <FileDown className="w-4 h-4 text-[#FBB927]" />
-            Download Growth Plan (PDF)
-          </button>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2 bg-[#FBB927] hover:bg-amber-400 text-slate-900 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            {showAddForm ? 'Close Form' : 'Add Target'}
-          </button>
-        </div>
-      </div>
+    <div className="max-w-5xl mx-auto space-y-6">
+      <PageHeader
+        eyebrow="Individual Scholar Development Plan"
+        title="Suggestions for Your Growth"
+        description="Scholar-populated milestones, targeted research competencies, and timeline commitments."
+        actions={
+          <>
+            <PageHeaderButton
+              variant="accent"
+              onClick={() => setShowAddForm(!showAddForm)}
+              icon={<Plus className="w-4 h-4" />}
+            >
+              {showAddForm ? 'Close Form' : 'Add Target'}
+            </PageHeaderButton>
+            <PageHeaderButton
+              variant="secondary"
+              onClick={onDownloadPdf}
+              icon={<FileDown className="w-4 h-4" />}
+            >
+              Download Growth Plan (PDF)
+            </PageHeaderButton>
+          </>
+        }
+      />
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-slate-50 border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-xs">
           <h2 className="text-base font-bold text-slate-900 mb-1">Define New Growth Objective</h2>
           <p className="text-xs text-slate-500 mb-4">
             Identify specific skill goals such as competitive grant drafting, quantitative modeling, or high-impact writing.
@@ -147,7 +140,7 @@ export const GrowthPage: React.FC<GrowthPageProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#003261] text-white rounded text-xs font-bold hover:bg-[#002244] transition-colors cursor-pointer"
+                className="px-5 py-2 bg-[#255190] hover:bg-[#183765] text-white rounded-[4px] text-xs font-semibold transition-colors cursor-pointer"
               >
                 Save Growth Target
               </button>
@@ -161,18 +154,18 @@ export const GrowthPage: React.FC<GrowthPageProps> = ({
         {userSuggestions.map((item) => (
           <div
             key={item.id}
-            className={`rounded-xl border p-6 shadow-sm transition-all flex flex-col justify-between ${
+            className={`rounded-[6px] border p-6 shadow-xs transition-all flex flex-col justify-between ${
               item.isCompleted
                 ? 'bg-emerald-50/40 border-emerald-200'
-                : 'bg-white border-slate-200 hover:border-slate-300'
+                : 'bg-white border-[#E2E8F0] hover:border-slate-300'
             }`}
           >
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs mb-3">
-                <span className="font-bold text-[#003261] uppercase tracking-wider">{item.area}</span>
+                <span className="font-semibold text-[#255190] uppercase tracking-wider">{item.area}</span>
                 <button
                   onClick={() => onToggleComplete(item.id)}
-                  className={`text-[11px] font-bold px-2.5 py-1 rounded cursor-pointer transition-colors flex items-center gap-1 ${
+                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-[4px] cursor-pointer transition-colors flex items-center gap-1 ${
                     item.isCompleted
                       ? 'bg-emerald-200 text-emerald-900'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -195,13 +188,13 @@ export const GrowthPage: React.FC<GrowthPageProps> = ({
               </h3>
 
               <div className="text-xs text-slate-700 space-y-2 mb-4">
-                <div className="bg-slate-50 p-3 rounded border border-slate-100">
+                <div className="bg-slate-50 p-3 rounded-[4px] border border-slate-100">
                   <span className="font-bold text-slate-800 block mb-1">Milestones & Action Plan:</span>
                   <p className="whitespace-pre-line text-slate-600 leading-relaxed">{item.milestoneActions}</p>
                 </div>
 
                 {item.mentorNotes && (
-                  <div className="p-3 bg-amber-50 rounded border border-amber-200 text-amber-900">
+                  <div className="p-3 bg-amber-50 rounded-[4px] border border-amber-200 text-amber-900">
                     <span className="font-bold block mb-0.5">Advisor / Peer Feedback:</span>
                     <p className="text-amber-800 leading-relaxed">{item.mentorNotes}</p>
                   </div>
@@ -217,7 +210,7 @@ export const GrowthPage: React.FC<GrowthPageProps> = ({
         ))}
 
         {userSuggestions.length === 0 && (
-          <div className="col-span-2 bg-white rounded-xl border border-slate-200 p-12 text-center text-xs text-slate-500">
+          <div className="col-span-2 bg-white rounded-[6px] border border-[#E2E8F0] p-12 text-center text-xs text-slate-500">
             No personal growth targets defined yet. Click "+ Add Target" above to plan competencies, grant skills, and research objectives.
           </div>
         )}

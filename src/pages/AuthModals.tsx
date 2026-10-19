@@ -92,16 +92,16 @@ export const AuthModals: React.FC<AuthModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-slate-300 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div className="bg-white w-full max-w-md rounded-[6px] shadow-2xl border border-slate-300 overflow-hidden flex flex-col my-auto max-h-[92vh]">
         {/* Header */}
-        <div className="bg-[#003261] text-white px-5 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between border-b-2 border-[#FBB927] flex-shrink-0">
+        <div className="bg-[#255190] text-white px-5 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between border-b-2 border-[#FDB813] flex-shrink-0">
           <div className="flex items-center space-x-2">
             {type === 'DELETE_ACCOUNT' ? (
               <AlertTriangle className="w-5 h-5 text-red-400" />
             ) : type === 'CHANGE_PASSWORD' ? (
-              <KeyRound className="w-5 h-5 text-[#FBB927]" />
+              <KeyRound className="w-5 h-5 text-[#FDB813]" />
             ) : (
-              <Lock className="w-5 h-5 text-[#FBB927]" />
+              <Lock className="w-5 h-5 text-[#FDB813]" />
             )}
             <h3 className="text-sm sm:text-base font-bold">
               {type === 'LOGIN' && 'Sign In to CUTAS'}
@@ -146,7 +146,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-[#003261] hover:bg-[#002244] text-white font-bold rounded shadow transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-[#255190] hover:bg-[#183765] text-white font-bold rounded-[4px] shadow-xs transition-colors cursor-pointer"
                 >
                   Sign In
                 </button>
@@ -158,7 +158,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
                   <button
                     type="button"
                     onClick={() => onSwitchType?.('REGISTER')}
-                    className="text-[#003261] font-bold hover:underline cursor-pointer"
+                    className="text-[#255190] font-bold hover:underline cursor-pointer"
                   >
                     Register as Scholar
                   </button>
@@ -275,7 +275,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-[#FBB927] hover:bg-amber-400 text-slate-900 font-bold rounded shadow transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-[#FDB813] hover:bg-[#e5a610] text-slate-900 font-bold rounded-[4px] shadow-xs transition-colors cursor-pointer"
                 >
                   Register as Scholar
                 </button>
@@ -286,7 +286,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSwitchType?.('LOGIN')}
-                  className="text-[#003261] font-bold hover:underline cursor-pointer"
+                  className="text-[#255190] font-bold hover:underline cursor-pointer"
                 >
                   Sign In here
                 </button>
@@ -305,7 +305,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
                   type="password"
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-[4px] text-xs"
                   required
                 />
               </div>
@@ -315,7 +315,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-[4px] text-xs"
                   required
                   minLength={8}
                 />
@@ -324,7 +324,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-[#003261] hover:bg-[#002244] text-white font-bold rounded shadow transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-[#255190] hover:bg-[#183765] text-white font-bold rounded-[4px] shadow-xs transition-colors cursor-pointer"
                 >
                   Update Password
                 </button>
@@ -334,13 +334,13 @@ export const AuthModals: React.FC<AuthModalProps> = ({
 
           {type === 'DELETE_ACCOUNT' && (
             <form onSubmit={handleDeleteAccount} className="space-y-4">
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-900 text-xs">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-[4px] text-red-900 text-xs">
                 <b>Irreversible Warning:</b> Deleting your account will permanently purge your scholar profile, study records, publication entries, challenges, and awards from the CUTAS database.
               </div>
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  Type <span className="font-mono text-red-700 font-extrabold">DELETE</span> to confirm:
+                  Type <span className="font-mono text-red-700 font-bold">DELETE</span> to confirm:
                 </label>
                 <input
                   type="text"
@@ -350,7 +350,7 @@ export const AuthModals: React.FC<AuthModalProps> = ({
                     setDeleteError('');
                   }}
                   placeholder="DELETE"
-                  className="w-full px-3 py-2 border border-red-300 rounded text-xs focus:ring-2 focus:ring-red-600 focus:outline-none"
+                  className="w-full px-3 py-2 border border-red-300 rounded-[4px] text-xs focus:ring-2 focus:ring-red-600 focus:outline-none"
                   required
                 />
                 {deleteError && (

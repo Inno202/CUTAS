@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, StudyDetails } from '../types';
+import { PageHeader, PageHeaderButton } from '../components/PageHeader';
 import { FileDown, Edit3, Save, CheckCircle, GraduationCap } from 'lucide-react';
 
 interface StudyDetailsPageProps {
@@ -36,31 +37,21 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
-        <div>
-          <div className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-            Academic Enrolment & Supervision
-          </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#003261] tracking-tight">
-            Details on Your Studies
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Official postgraduate degree records, supervisory arrangements, research topic, and funding status.
-          </p>
-        </div>
-
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <button
+    <div className="max-w-4xl mx-auto space-y-6">
+      <PageHeader
+        eyebrow="Academic Enrolment & Supervision"
+        title="Details on Your Studies"
+        description="Official postgraduate degree records, supervisory arrangements, research topic, and funding status."
+        actions={
+          <PageHeaderButton
+            variant="primary"
             onClick={onDownloadPdf}
-            className="px-4 py-2 bg-[#003261] hover:bg-[#002244] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+            icon={<FileDown className="w-4 h-4 text-[#FDB813]" />}
           >
-            <FileDown className="w-4 h-4 text-[#FBB927]" />
             Download Study Dossier (PDF)
-          </button>
-        </div>
-      </div>
+          </PageHeaderButton>
+        }
+      />
 
       {savedSuccess && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center gap-2">
@@ -70,10 +61,10 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
       )}
 
       {/* Main Dossier Card */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+      <div className="bg-white rounded-[6px] border border-[#E2E8F0] p-6 sm:p-8 shadow-xs">
         <div className="flex items-center justify-between pb-6 border-b border-slate-200">
           <div>
-            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-[#255190] uppercase tracking-wider block">
               Enrolled Postgraduate Scholar
             </span>
             <h2 className="text-xl font-bold text-slate-900 mt-0.5">
@@ -86,7 +77,7 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
 
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-[4px] flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5" />
             {isEditing ? 'Cancel Editing' : 'Update Details'}
@@ -215,7 +206,7 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#003261] text-white rounded text-xs font-bold hover:bg-[#002244] transition-colors cursor-pointer flex items-center gap-1.5 shadow"
+                className="px-5 py-2 bg-[#255190] text-white rounded-[4px] text-xs font-semibold hover:bg-[#183765] transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
               >
                 <Save className="w-3.5 h-3.5" /> Save Changes
               </button>
@@ -229,7 +220,7 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
                 <span className="font-bold text-slate-400 uppercase tracking-wider block text-[10px]">
                   Academic Programme
                 </span>
-                <span className="text-sm font-bold text-slate-900 block mt-1">
+                <span className="text-sm font-semibold text-slate-900 block mt-1">
                   {studyDetails.programme}
                 </span>
               </div>
@@ -266,7 +257,7 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
                 <span className="font-bold text-slate-400 uppercase tracking-wider block text-[10px]">
                   Funding
                 </span>
-                <span className="text-xs font-bold text-emerald-800 block mt-1 bg-emerald-50 p-2.5 rounded border border-emerald-200">
+                <span className="text-xs font-semibold text-emerald-800 block mt-1 bg-emerald-50 p-2.5 rounded-[4px] border border-emerald-200">
                   {studyDetails.funding}
                 </span>
               </div>
@@ -276,7 +267,7 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
               <span className="font-bold text-slate-400 uppercase tracking-wider block text-[10px] mb-1">
                 Approved Research Topic
               </span>
-              <h3 className="text-base font-bold text-[#003261] leading-snug">
+              <h3 className="text-base font-bold text-[#255190] leading-snug">
                 {studyDetails.researchTopic}
               </h3>
             </div>
@@ -285,7 +276,7 @@ export const StudyDetailsPage: React.FC<StudyDetailsPageProps> = ({
               <span className="font-bold text-slate-400 uppercase tracking-wider block text-[10px] mb-2">
                 Research Abstract & Methodology Outline
               </span>
-              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-700 leading-relaxed whitespace-pre-line">
+              <div className="p-4 bg-slate-50 rounded-[4px] border border-[#E2E8F0] text-xs text-slate-700 leading-relaxed whitespace-pre-line">
                 {studyDetails.researchAbstract}
               </div>
             </div>

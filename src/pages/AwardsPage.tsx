@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Award } from '../types';
+import { PageHeader, PageHeaderButton } from '../components/PageHeader';
 import { FileDown, Plus, Trophy, Award as AwardIcon, Trash2 } from 'lucide-react';
 
 interface AwardsPageProps {
@@ -40,42 +41,34 @@ export const AwardsPage: React.FC<AwardsPageProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
-        <div>
-          <div className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-            Academic Honours & Distinctions
-          </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#003261] tracking-tight">
-            Awards and Recognitions
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Scholar-populated academic honours, best paper presentations, postgraduate merit distinctions, and fellowship awards.
-          </p>
-        </div>
-
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <button
-            onClick={onDownloadPdf}
-            className="px-4 py-2 bg-[#003261] hover:bg-[#002244] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <FileDown className="w-4 h-4 text-[#FBB927]" />
-            Download Awards Dossier (PDF)
-          </button>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2 bg-[#FBB927] hover:bg-amber-400 text-slate-900 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            {showAddForm ? 'Close Form' : 'Add Recognition'}
-          </button>
-        </div>
-      </div>
+    <div className="max-w-5xl mx-auto space-y-6">
+      <PageHeader
+        eyebrow="Academic Honours & Distinctions"
+        title="Awards and Recognitions"
+        description="Scholar-populated academic honours, best paper presentations, postgraduate merit distinctions, and fellowship awards."
+        actions={
+          <>
+            <PageHeaderButton
+              variant="accent"
+              onClick={() => setShowAddForm(!showAddForm)}
+              icon={<Plus className="w-4 h-4" />}
+            >
+              {showAddForm ? 'Close Form' : 'Add Recognition'}
+            </PageHeaderButton>
+            <PageHeaderButton
+              variant="secondary"
+              onClick={onDownloadPdf}
+              icon={<FileDown className="w-4 h-4" />}
+            >
+              Download Awards Dossier (PDF)
+            </PageHeaderButton>
+          </>
+        }
+      />
 
       {/* Add Award Form */}
       {showAddForm && (
-        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-slate-50 border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-xs">
           <h2 className="text-base font-bold text-slate-900 mb-1">Record Scholarly Award or Honour</h2>
           <p className="text-xs text-slate-500 mb-4">
             Honours will be archived in your CUTAS academic profile and included in your exportable dossier.
@@ -140,7 +133,7 @@ export const AwardsPage: React.FC<AwardsPageProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#003261] text-white rounded text-xs font-bold hover:bg-[#002244] transition-colors cursor-pointer"
+                className="px-5 py-2 bg-[#255190] hover:bg-[#183765] text-white rounded-[4px] text-xs font-semibold transition-colors cursor-pointer"
               >
                 Save Award Record
               </button>
@@ -154,12 +147,12 @@ export const AwardsPage: React.FC<AwardsPageProps> = ({
         {userAwards.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between"
+            className="bg-white rounded-[6px] border border-[#E2E8F0] p-6 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs mb-3">
-                <span className="font-bold text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Trophy className="w-4 h-4 text-[#FBB927]" />
+                <span className="font-semibold text-[#255190] uppercase tracking-wider flex items-center gap-1.5">
+                  <Trophy className="w-4 h-4 text-[#FDB813]" />
                   Year {item.year} Distinction
                 </span>
                 <button
@@ -184,7 +177,7 @@ export const AwardsPage: React.FC<AwardsPageProps> = ({
               </div>
 
               {item.description && (
-                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded border border-slate-100">
+                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-[4px] border border-slate-100">
                   {item.description}
                 </p>
               )}
@@ -198,7 +191,7 @@ export const AwardsPage: React.FC<AwardsPageProps> = ({
         ))}
 
         {userAwards.length === 0 && (
-          <div className="col-span-2 bg-white rounded-xl border border-slate-200 p-12 text-center text-xs text-slate-500">
+          <div className="col-span-2 bg-white rounded-[6px] border border-[#E2E8F0] p-12 text-center text-xs text-slate-500">
             No awards or distinctions recorded yet. Click "+ Add Recognition" above to add your merit achievements.
           </div>
         )}

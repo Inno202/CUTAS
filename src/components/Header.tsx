@@ -15,6 +15,10 @@ interface HeaderProps {
   onNavigateLogin?: (returnTab?: TabId) => void;
   onNavigateRegister?: () => void;
   onNavigateProfile?: () => void;
+  onOpenLogin?: () => void;
+  onOpenRegister?: () => void;
+  onOpenChangePassword?: () => void;
+  onOpenDeleteAccount?: () => void;
 }
 
 interface NavGroupItem {
@@ -316,7 +320,9 @@ export const Header: React.FC<HeaderProps> = ({
                               >
                                 <span className="truncate">{item.label}</span>
                                 {isLocked && (
-                                  <Lock className="w-3.5 h-3.5 text-slate-400 ml-2 flex-shrink-0" title="Sign in required" />
+                                  <span title="Sign in required">
+                                    <Lock className="w-3.5 h-3.5 text-slate-400 ml-2 flex-shrink-0" />
+                                  </span>
                                 )}
                               </button>
                             );

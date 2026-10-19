@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, TabId, StudyDetails, Publication, Challenge, 
   GrowthSuggestion, FundingOpportunity, Award, Workshop, 
-  InstitutionalContent, AuditLogItem, ChallengeStatus 
+  InstitutionalContent, AuditLogItem, ChallengeStatus,
+  ScholarCategory
 } from './types';
 import { 
   INITIAL_USERS, INITIAL_STUDIES, INITIAL_PUBLICATIONS, 
@@ -28,6 +29,11 @@ import { FundingPage } from './pages/FundingPage';
 import { AwardsPage } from './pages/AwardsPage';
 import { WorkshopsPage } from './pages/WorkshopsPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { AuthModals } from './pages/AuthModals';
 
 export default function App() {
@@ -223,6 +229,26 @@ export default function App() {
   const handleEditWorkshop = (id: string, updated: Partial<Workshop>) => {
     setWorkshops(prev => prev.map(w => w.id === id ? { ...w, ...updated } : w));
     addAuditLog('WORKSHOP_EDIT', `Updated workshop #${id}`);
+  };
+
+  const handleDeleteFunding = (id: string) => {
+    setFunding(prev => prev.filter(f => f.id !== id));
+    addAuditLog('FUNDING_DELETE', `Removed funding call #${id}`);
+  };
+
+  const handleDeleteWorkshop = (id: string) => {
+    setWorkshops(prev => prev.filter(w => w.id !== id));
+    addAuditLog('WORKSHOP_DELETE', `Removed workshop #${id}`);
+  };
+
+  const handleUpdateScholarCategory = (userId: string, category: ScholarCategory) => {
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, category } : u));
+    addAuditLog('SCHOLAR_CATEGORY_UPDATE', `Updated category for user #${userId} to ${category}`);
+  };
+
+  const handleUpdateUser = (updatedUser: User) => {
+    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    addAuditLog('PROFILE_UPDATE', `Updated profile for ${updatedUser.username}`);
   };
 
   // Institutional Content (Tabs 1 & 2)
@@ -623,16 +649,88 @@ export default function App() {
         return (
           <AdminDashboardPage
             currentUser={currentUser}
+            users={users}
             challenges={challenges}
             auditLogs={auditLogs}
-            scholarsCount={users.filter(u => u.role === 'SCHOLAR').length}
-            fundingCount={funding.length}
-            workshopsCount={workshops.length}
+            funding={funding}
+            workshops={workshops}
+            content={content}
             onUpdateChallengeResolution={handleUpdateChallengeResolution}
             onGenerateAnnualReportPdf={triggerAnnualReportPdf}
             onNavigateTab={(tab) => setActiveTab(tab)}
             onExportDatabaseJson={handleExportDatabaseJson}
+            onUpdateContent={handleUpdateContent}
+            onAddFunding={handleAddFunding}
+            onEditFunding={handleEditFunding}
+            onDeleteFunding={handleDeleteFunding}
+            onAddWorkshop={handleAddWorkshop}
+            onEditWorkshop={handleEditWorkshop}
+            onDeleteWorkshop={handleDeleteWorkshop}
+            onUpdateScholarCategory={handleUpdateScholarCategory}
           />
+        );
+
+      case 'login':
+        return (
+          <LoginPage
+            users={users}
+            onLoginSuccess={(userId, returnTab) => {
+              setCurrentUserId(userId);
+              setActiveTab(returnTab || 'studies');
+            }}
+            onNavigate={(tab) => setActiveTab(tab)}
+          />
+        );
+
+      case 'register':
+        return (
+          <RegisterPage
+            existingUsers={users}
+            onRegisterSuccess={handleRegisterSuccess}
+            onNavigate={(tab) => setActiveTab(tab)}
+          />
+        );
+
+      case 'forgot_password':
+        return (
+          <ForgotPasswordPage
+            onNavigate={(tab) => setActiveTab(tab)}
+          />
+        );
+
+      case 'reset_password':
+        return (
+          <ResetPasswordPage
+            onNavigate={(tab) => setActiveTab(tab)}
+            onPasswordResetSuccess={() => setActiveTab('login')}
+          />
+        );
+
+      case 'profile':
+        return (
+          <ProfilePage
+            currentUser={currentUser}
+            users={users}
+            onUpdateUser={handleUpdateUser}
+            onSwitchUser={handleSwitchUser}
+            onNavigate={(tab) => setActiveTab(tab)}
+            onDeleteAccount={handleDeleteCurrentAccount}
+          />
+        );
+
+      case 'django_code':
+        return (
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-[6px] text-xs text-[#255190]">
+              Viewing CUTAS Django Production Architecture & Mirror Codebase.
+            </div>
+            <button
+              onClick={() => setIsDjangoViewerOpen(true)}
+              className="px-4 py-2 bg-[#255190] text-white rounded-[4px] text-xs font-semibold cursor-pointer"
+            >
+              Open Full Django Code Inspector
+            </button>
+          </div>
         );
 
       default:
@@ -649,10 +747,13 @@ export default function App() {
         setActiveTab={setActiveTab}
         users={users}
         onSwitchUser={handleSwitchUser}
-        onOpenLogin={() => setAuthModal({ isOpen: true, type: 'LOGIN' })}
-        onOpenRegister={() => setAuthModal({ isOpen: true, type: 'REGISTER' })}
-        onOpenChangePassword={() => setAuthModal({ isOpen: true, type: 'CHANGE_PASSWORD' })}
-        onOpenDeleteAccount={() => setAuthModal({ isOpen: true, type: 'DELETE_ACCOUNT' })}
+        onNavigateLogin={() => setActiveTab('login')}
+        onNavigateRegister={() => setActiveTab('register')}
+        onNavigateProfile={() => setActiveTab('profile')}
+        onOpenLogin={() => setActiveTab('login')}
+        onOpenRegister={() => setActiveTab('register')}
+        onOpenChangePassword={() => setActiveTab('profile')}
+        onOpenDeleteAccount={() => setActiveTab('profile')}
       />
 
       {/* Main Content Area */}

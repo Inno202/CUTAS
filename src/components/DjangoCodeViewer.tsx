@@ -168,7 +168,7 @@ def study_details_pdf(request):
     story = [
         Paragraph("<b>CENTRAL UNIVERSITY OF TECHNOLOGY ACADEMIC SOCIETY</b>", title_style),
         Paragraph(f"Official Postgraduate Study Dossier · {request.user.get_full_name()}", sub_style),
-        HRFlowable(width="100%", thickness=2, color=colors.HexColor('#FBB927')),
+        HRFlowable(width="100%", thickness=2, color=colors.HexColor('#FDB813')),
         Paragraph(f"<b>Programme:</b> {study.programme}", body_style),
         Paragraph(f"<b>University:</b> {study.university}", body_style),
         Paragraph(f"<b>Supervisor:</b> {study.supervisor}", body_style),

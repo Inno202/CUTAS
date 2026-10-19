@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Challenge, ChallengeCategory, ChallengeStatus } from '../types';
+import { PageHeader, PageHeaderButton } from '../components/PageHeader';
 import { FileDown, Plus, AlertCircle, CheckCircle, Clock, Shield, Send } from 'lucide-react';
 
 interface ChallengesPageProps {
@@ -54,41 +55,33 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200">
-        <div>
-          <div className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-            Institutional Research Intervention Desk
-          </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#003261] tracking-tight">
-            Challenges and Solutions
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Submit research roadblocks (funding, Turnitin similarity index, thesis writing, lab access, ethics approval) for society leadership resolution.
-          </p>
-        </div>
-
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <button
-            onClick={onDownloadPdf}
-            className="px-4 py-2 bg-[#003261] hover:bg-[#002244] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <FileDown className="w-4 h-4 text-[#FBB927]" />
-            Download Challenges Log (PDF)
-          </button>
-          <button
-            onClick={() => setShowSubmitForm(!showSubmitForm)}
-            className="px-4 py-2 bg-[#FBB927] hover:bg-amber-400 text-slate-900 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            {showSubmitForm ? 'Close Form' : 'Submit Problem'}
-          </button>
-        </div>
-      </div>
+    <div className="max-w-5xl mx-auto space-y-6">
+      <PageHeader
+        eyebrow="Institutional Research Intervention Desk"
+        title="Challenges and Solutions"
+        description="Submit research roadblocks (funding, Turnitin similarity index, thesis writing, lab access, ethics approval) for society leadership resolution."
+        actions={
+          <>
+            <PageHeaderButton
+              variant="accent"
+              onClick={() => setShowSubmitForm(!showSubmitForm)}
+              icon={<Plus className="w-4 h-4" />}
+            >
+              {showSubmitForm ? 'Close Form' : 'Submit Problem'}
+            </PageHeaderButton>
+            <PageHeaderButton
+              variant="secondary"
+              onClick={onDownloadPdf}
+              icon={<FileDown className="w-4 h-4" />}
+            >
+              Download Challenges Log (PDF)
+            </PageHeaderButton>
+          </>
+        }
+      />
 
       {submittedMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center gap-2">
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-[4px] text-xs flex items-center gap-2">
           <CheckCircle className="w-4 h-4 text-emerald-600" />
           <span>Research problem logged successfully. CUTAS mentors and administrators have received the notification.</span>
         </div>
@@ -96,7 +89,7 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
 
       {/* Submission Form */}
       {showSubmitForm && (
-        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-slate-50 border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-xs">
           <h2 className="text-base font-bold text-slate-900 mb-1">Submit a Research Challenge</h2>
           <p className="text-xs text-slate-500 mb-4">
             Confidential problem submission routed directly to the CUTAS Project Leaders and Faculty Mentors.
@@ -156,7 +149,7 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#003261] text-white rounded text-xs font-bold hover:bg-[#002244] transition-colors cursor-pointer flex items-center gap-1.5 shadow"
+                className="px-5 py-2 bg-[#255190] text-white rounded-[4px] text-xs font-semibold hover:bg-[#183765] transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
               >
                 <Send className="w-3.5 h-3.5" /> Submit Research Problem
               </button>
@@ -174,12 +167,12 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
         {visibleChallenges.map((ch) => (
           <div
             key={ch.id}
-            className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between"
+            className="bg-white rounded-[6px] border border-[#E2E8F0] p-6 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
           >
             <div>
               <div className="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 gap-2 text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-800 uppercase tracking-wider">{ch.category.replace('_', ' ')}</span>
+                  <span className="font-semibold text-slate-800 uppercase tracking-wider">{ch.category.replace('_', ' ')}</span>
                   <span className="text-slate-300">·</span>
                   <span className="text-slate-500">Logged: {ch.createdAt}</span>
                   {currentUser.role !== 'SCHOLAR' && (
@@ -190,20 +183,20 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
                   )}
                 </div>
 
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${getStatusBadge(ch.status)}`}>
+                <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-[4px] border ${getStatusBadge(ch.status)}`}>
                   {ch.status.replace('_', ' ')}
                 </span>
               </div>
 
               <h3 className="text-base font-bold text-slate-900 mt-3 mb-2">{ch.title}</h3>
-              <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line mb-4 bg-slate-50/60 p-4 rounded-lg border border-slate-100">
+              <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line mb-4 bg-slate-50/60 p-4 rounded-[4px] border border-slate-100">
                 {ch.description}
               </p>
             </div>
 
             {/* Official Resolution Block */}
             {ch.resolutionNotes ? (
-              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs space-y-1">
+              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-[4px] text-xs space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-emerald-900 flex items-center gap-1.5">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-700" />
@@ -223,7 +216,7 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
                 )}
               </div>
             ) : (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-500 italic flex items-center gap-1.5">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-[4px] text-xs text-slate-500 italic flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-600" />
                 <span>Pending review by CUTAS project leader or assigned faculty mentor.</span>
               </div>
@@ -232,7 +225,7 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
         ))}
 
         {visibleChallenges.length === 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-xs text-slate-500">
+          <div className="bg-white rounded-[6px] border border-[#E2E8F0] p-12 text-center text-xs text-slate-500">
             No research problems logged. If you encounter roadblocks with Turnitin similarity, equipment, or supervision, click "+ Submit Problem".
           </div>
         )}

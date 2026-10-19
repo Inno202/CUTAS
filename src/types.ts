@@ -106,6 +106,8 @@ export interface FundingOpportunity {
   portalUrl: string;
   featuredOnLanding: boolean;
   isActive: boolean;
+  status?: 'DRAFT' | 'PUBLISHED';
+  publishedAt?: string;
 }
 
 export interface Award {
@@ -126,6 +128,8 @@ export interface Workshop {
   venueOrLink: string;
   description: string;
   category: string;
+  status?: 'DRAFT' | 'PUBLISHED';
+  publishedAt?: string;
 }
 
 export interface InstitutionalContent {
@@ -134,6 +138,8 @@ export interface InstitutionalContent {
   headline: string;
   body: string;
   updatedAt: string;
+  status?: 'DRAFT' | 'PUBLISHED';
+  publishedAt?: string;
 }
 
 export interface AuditLogItem {
