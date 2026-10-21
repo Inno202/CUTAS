@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { User, TabId, ScholarCategory } from '../types';
 import { PageHeader } from '../components/PageHeader';
 import { 
@@ -44,20 +44,25 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     );
   }
 
-  // Active section for desktop tabs
+  // Active section for desktop tabs (default: 'personal')
   const [activeSection, setActiveSection] = useState<ProfileTab>('personal');
 
-  // Mobile accordion states (each can be toggled open/closed)
-  const [mobileSections, setMobileSections] = useState<Record<ProfileTab, boolean>>({
-    personal: true,
-    security: false,
-    shortcuts: false,
-    settings: false,
-    roles: false,
-  });
+  // Mobile single open accordion section (default: 'personal')
+  const [mobileOpenSection, setMobileOpenSection] = useState<ProfileTab | null>('personal');
+
+  // Ref to content panel for smooth scroll on tab switch
+  const contentTopRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectSection = (section: ProfileTab) => {
+    setActiveSection(section);
+    setMobileOpenSection(section);
+    contentTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const toggleMobileSection = (section: ProfileTab) => {
-    setMobileSections(prev => ({ ...prev, [section]: !prev[section] }));
+    setMobileOpenSection(prev => (prev === section ? null : section));
+    setActiveSection(section);
+    contentTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   // 1. Personal Details Form State
@@ -185,7 +190,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
           <nav className="p-2 space-y-1 text-xs">
             <button
-              onClick={() => setActiveSection('personal')}
+              onClick={() => handleSelectSection('personal')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
                 activeSection === 'personal'
                   ? 'bg-[#255190] text-white'
@@ -197,7 +202,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </button>
 
             <button
-              onClick={() => setActiveSection('security')}
+              onClick={() => handleSelectSection('security')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
                 activeSection === 'security'
                   ? 'bg-[#255190] text-white'
@@ -209,7 +214,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </button>
 
             <button
-              onClick={() => setActiveSection('shortcuts')}
+              onClick={() => handleSelectSection('shortcuts')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
                 activeSection === 'shortcuts'
                   ? 'bg-[#255190] text-white'
@@ -221,7 +226,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </button>
 
             <button
-              onClick={() => setActiveSection('settings')}
+              onClick={() => handleSelectSection('settings')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
                 activeSection === 'settings'
                   ? 'bg-[#255190] text-white'
@@ -234,7 +239,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
             {canSwitchRole && (
               <button
-                onClick={() => setActiveSection('roles')}
+                onClick={() => handleSelectSection('roles')}
                 className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
                   activeSection === 'roles'
                     ? 'bg-[#255190] text-white'
@@ -249,11 +254,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
 
         {/* Content Area (Desktop tab panel or Mobile collapsible accordions) */}
-        <div className="lg:col-span-3 space-y-4">
+        <div ref={contentTopRef} className="lg:col-span-3 space-y-4">
           {/* ============================================================== */}
           {/* SECTION 1: PERSONAL DETAILS */}
           {/* ============================================================== */}
-          <div className="bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden">
+          <div className={`bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden ${activeSection !== 'personal' ? 'lg:hidden' : ''}`}>
             {/* Mobile accordion toggle header */}
             <button
               type="button"
@@ -263,7 +268,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <span className="flex items-center gap-2">
                 <UserIcon className="w-4 h-4" /> Personal Details
               </span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${mobileSections.personal ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform ${mobileOpenSection === 'personal' ? 'rotate-180' : ''}`} />
             </button>
 
             {/* Desktop section header (hidden on mobile) */}
@@ -273,7 +278,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
 
             {/* Section body */}
-            <div className={`p-4 sm:p-6 ${!mobileSections.personal ? 'hidden lg:block' : ''} ${activeSection !== 'personal' ? 'lg:hidden' : ''}`}>
+            <div className={`p-4 sm:p-6 ${mobileOpenSection !== 'personal' ? 'hidden' : 'block'} lg:block`}>
               {personalSuccess && (
                 <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-[4px] text-xs flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
@@ -446,7 +451,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           {/* ============================================================== */}
           {/* SECTION 2: SECURITY */}
           {/* ============================================================== */}
-          <div className="bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden">
+          <div className={`bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden ${activeSection !== 'security' ? 'lg:hidden' : ''}`}>
             <button
               type="button"
               onClick={() => toggleMobileSection('security')}
@@ -455,7 +460,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <span className="flex items-center gap-2">
                 <KeyRound className="w-4 h-4" /> Security & Password
               </span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${mobileSections.security ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform ${mobileOpenSection === 'security' ? 'rotate-180' : ''}`} />
             </button>
 
             <div className="hidden lg:block px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -463,7 +468,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <p className="text-xs text-slate-500 mt-0.5">Change your institutional password and manage login access.</p>
             </div>
 
-            <div className={`p-4 sm:p-6 ${!mobileSections.security ? 'hidden lg:block' : ''} ${activeSection !== 'security' ? 'lg:hidden' : ''}`}>
+            <div className={`p-4 sm:p-6 ${mobileOpenSection !== 'security' ? 'hidden' : 'block'} lg:block`}>
               {securityError && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-[4px] text-xs flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
@@ -531,7 +536,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           {/* ============================================================== */}
           {/* SECTION 3: ACADEMIC SHORTCUTS */}
           {/* ============================================================== */}
-          <div className="bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden">
+          <div className={`bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden ${activeSection !== 'shortcuts' ? 'lg:hidden' : ''}`}>
             <button
               type="button"
               onClick={() => toggleMobileSection('shortcuts')}
@@ -540,7 +545,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <span className="flex items-center gap-2">
                 <ExternalLink className="w-4 h-4" /> Academic Shortcuts
               </span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${mobileSections.shortcuts ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform ${mobileOpenSection === 'shortcuts' ? 'rotate-180' : ''}`} />
             </button>
 
             <div className="hidden lg:block px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -548,7 +553,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <p className="text-xs text-slate-500 mt-0.5">Jump directly to your research records, publications, and milestone plans.</p>
             </div>
 
-            <div className={`p-4 sm:p-6 ${!mobileSections.shortcuts ? 'hidden lg:block' : ''} ${activeSection !== 'shortcuts' ? 'lg:hidden' : ''}`}>
+            <div className={`p-4 sm:p-6 ${mobileOpenSection !== 'shortcuts' ? 'hidden' : 'block'} lg:block`}>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
                   type="button"
@@ -622,7 +627,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           {/* ============================================================== */}
           {/* SECTION 4: ACCOUNT SETTINGS */}
           {/* ============================================================== */}
-          <div className="bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden">
+          <div className={`bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden ${activeSection !== 'settings' ? 'lg:hidden' : ''}`}>
             <button
               type="button"
               onClick={() => toggleMobileSection('settings')}
@@ -631,7 +636,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <span className="flex items-center gap-2">
                 <Settings className="w-4 h-4" /> Account Settings
               </span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${mobileSections.settings ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform ${mobileOpenSection === 'settings' ? 'rotate-180' : ''}`} />
             </button>
 
             <div className="hidden lg:block px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -639,7 +644,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <p className="text-xs text-slate-500 mt-0.5">Control notification alerts and manage account lifecycle.</p>
             </div>
 
-            <div className={`p-4 sm:p-6 ${!mobileSections.settings ? 'hidden lg:block' : ''} ${activeSection !== 'settings' ? 'lg:hidden' : ''}`}>
+            <div className={`p-4 sm:p-6 ${mobileOpenSection !== 'settings' ? 'hidden' : 'block'} lg:block`}>
               {settingsSuccess && (
                 <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-[4px] text-xs flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
@@ -731,7 +736,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           {/* SECTION 5: ROLE SWITCHING */}
           {/* ============================================================== */}
           {canSwitchRole && (
-            <div className="bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden">
+            <div className={`bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs overflow-hidden ${activeSection !== 'roles' ? 'lg:hidden' : ''}`}>
               <button
                 type="button"
                 onClick={() => toggleMobileSection('roles')}
@@ -740,7 +745,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <span className="flex items-center gap-2">
                   <Shield className="w-4 h-4" /> Switch Role / Test Profile
                 </span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${mobileSections.roles ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 transition-transform ${mobileOpenSection === 'roles' ? 'rotate-180' : ''}`} />
               </button>
 
               <div className="hidden lg:block px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -748,7 +753,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <p className="text-xs text-slate-500 mt-0.5">Switch active user session between verified scholar and administrator accounts.</p>
               </div>
 
-              <div className={`p-4 sm:p-6 ${!mobileSections.roles ? 'hidden lg:block' : ''} ${activeSection !== 'roles' ? 'lg:hidden' : ''}`}>
+              <div className={`p-4 sm:p-6 ${mobileOpenSection !== 'roles' ? 'hidden' : 'block'} lg:block`}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   {users.map((u) => {
                     const isCurrent = u.id === currentUser.id;

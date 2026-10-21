@@ -128,9 +128,6 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
           {/* Column 4: Campuses & Contact */}
           <div>
             <h4 className="text-[#FDB813] font-bold text-xs uppercase tracking-wider mb-3">Campuses & Contact</h4>
-            <p className="text-white/70 leading-relaxed mb-3">
-              Directorate of Research Development and Postgraduate Studies (DRD&PS).
-            </p>
             <div className="space-y-1.5 text-white/60 text-[11px]">
               <div>Bloemfontein Campus: 20 Pres. Brand St, Bloemfontein, 9301</div>
               <div>Welkom Campus: 1 Mothusi Rd, Welkom, 9460</div>
@@ -144,10 +141,6 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
           <p>&copy; {new Date().getFullYear()} Central University of Technology Academic Society (CUTAS). All Rights Reserved.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-3 gap-y-1">
             <span>Free State, South Africa</span>
-            <span className="hidden sm:inline">·</span>
-            <button onClick={() => setActiveTab('django_code')} className="hover:text-[#FDB813] transition-colors cursor-pointer">
-              Django Production Core
-            </button>
           </div>
         </div>
       </div>

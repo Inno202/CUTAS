@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   User, Challenge, ChallengeStatus, AuditLogItem, TabId, 
   FundingOpportunity, Workshop, InstitutionalContent, ScholarCategory 
@@ -69,6 +69,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
 
   // Active section state
   const [activeSection, setActiveSection] = useState<AdminConsoleSection>('content');
+
+  // Ref to content panel for smooth scroll on module switch
+  const contentTopRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectSection = (section: AdminConsoleSection) => {
+    setActiveSection(section);
+    contentTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // Success message state
   const [feedbackMsg, setFeedbackMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -363,7 +371,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
             {/* a) Content */}
             <button
               type="button"
-              onClick={() => setActiveSection('content')}
+              onClick={() => handleSelectSection('content')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                 activeSection === 'content' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
               }`}
@@ -377,7 +385,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
             {/* b) Funding */}
             <button
               type="button"
-              onClick={() => setActiveSection('funding')}
+              onClick={() => handleSelectSection('funding')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                 activeSection === 'funding' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
               }`}
@@ -394,7 +402,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
             {/* c) Workshops */}
             <button
               type="button"
-              onClick={() => setActiveSection('workshops')}
+              onClick={() => handleSelectSection('workshops')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                 activeSection === 'workshops' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
               }`}
@@ -411,7 +419,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
             {/* d) Challenges Queue */}
             <button
               type="button"
-              onClick={() => setActiveSection('challenges')}
+              onClick={() => handleSelectSection('challenges')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                 activeSection === 'challenges' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
               }`}
@@ -432,7 +440,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
             {/* e) Scholars */}
             <button
               type="button"
-              onClick={() => setActiveSection('scholars')}
+              onClick={() => handleSelectSection('scholars')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                 activeSection === 'scholars' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
               }`}
@@ -449,7 +457,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
             {/* f) Reports */}
             <button
               type="button"
-              onClick={() => setActiveSection('reports')}
+              onClick={() => handleSelectSection('reports')}
               className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                 activeSection === 'reports' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
               }`}
@@ -472,7 +480,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                 {/* g) Audit Log */}
                 <button
                   type="button"
-                  onClick={() => setActiveSection('audit')}
+                  onClick={() => handleSelectSection('audit')}
                   className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                     activeSection === 'audit' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
                   }`}
@@ -489,7 +497,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                 {/* h) Data Export */}
                 <button
                   type="button"
-                  onClick={() => setActiveSection('export')}
+                  onClick={() => handleSelectSection('export')}
                   className={`w-full text-left px-3 py-2.5 rounded-[4px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                     activeSection === 'export' ? 'bg-[#255190] text-white' : 'text-slate-700 hover:bg-slate-50'
                   }`}
@@ -505,7 +513,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
         </div>
 
         {/* Content Panel */}
-        <div className="lg:col-span-3 space-y-4">
+        <div ref={contentTopRef} className="lg:col-span-3 space-y-4">
           {/* ================================================================ */}
           {/* A: CONTENT EDITING */}
           {/* ================================================================ */}

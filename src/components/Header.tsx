@@ -175,63 +175,6 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Top Strip: 6px accent strip */}
         <div className="h-[6px] w-full bg-[#FDB813]" />
 
-        {/* Level 1: Desktop Utility Row (small, uppercase, letter-spaced, dividers using --cut-line) */}
-        <div className="hidden lg:block border-b border-white/20 text-[11px] uppercase tracking-wider font-semibold">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center justify-between text-white/90">
-            <div className="text-[10px] text-white/70 tracking-normal normal-case">
-              Central University of Technology, Free State · Academic Society Portal
-            </div>
-
-            <div className="flex items-center space-x-3 text-white">
-              {currentUser ? (
-                <>
-                  <button
-                    onClick={() => {
-                      if (onNavigateProfile) onNavigateProfile();
-                      else setActiveTab('profile');
-                    }}
-                    className={`hover:text-[#FDB813] transition-colors cursor-pointer flex items-center gap-1 ${
-                      activeTab === 'profile' ? 'text-[#FDB813]' : ''
-                    }`}
-                  >
-                    <UserIcon className="w-3 h-3" />
-                    <span>My Profile</span>
-                  </button>
-                  <span className="text-white/40">|</span>
-                  <button
-                    onClick={() => setIsLogoutConfirmOpen(true)}
-                    className="hover:text-red-300 text-white/80 transition-colors cursor-pointer flex items-center gap-1"
-                  >
-                    <LogOut className="w-3 h-3 text-red-300" />
-                    <span>Log Out</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      if (onNavigateLogin) onNavigateLogin();
-                      else setActiveTab('login');
-                    }}
-                    className="hover:text-[#FDB813] transition-colors cursor-pointer"
-                  >
-                    Sign in
-                  </button>
-                  <span className="text-white/40">|</span>
-                  <button
-                    onClick={() => {
-                      if (onNavigateRegister) onNavigateRegister();
-                      else setActiveTab('register');
-                    }}
-                    className="hover:text-[#FDB813] transition-colors cursor-pointer"
-                  >
-                    Register
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
 
         {/* Level 2: Main Row (Logo, Navigation Groups, Right Side Profile/Auth) */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

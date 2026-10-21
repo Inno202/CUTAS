@@ -2,7 +2,7 @@ import React from 'react';
 import { User, FundingOpportunity, Workshop, TabId } from '../types';
 import heroCampusImage from '../assets/images/cutas_hero_banner_1792291983153.jpg';
 import { 
-  ArrowRight, Calendar, MapPin, DollarSign, Bell, Shield, Sparkles, CheckCircle2
+  ArrowRight, Calendar, MapPin, DollarSign, Shield, Sparkles, CheckCircle2
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -32,26 +32,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const publishedFunding = funding.filter(f => f.status !== 'DRAFT');
   const featuredFunding = publishedFunding.filter(f => f.featuredOnLanding && f.isActive).slice(0, 3);
   const publishedWorkshops = workshops.filter(w => w.status !== 'DRAFT').slice(0, 3);
-
-  // Auto-generated "Recent updates" feed from published actions (latest 5, newest first)
-  const recentUpdates = [
-    ...publishedFunding.map(f => ({
-      id: `up_f_${f.id}`,
-      type: 'funding' as const,
-      title: `New funding call: ${f.title}`,
-      subtitle: `${f.funder} · Deadline: ${f.deadline}`,
-      date: f.publishedAt || f.deadline || 'Recent',
-      tab: 'funding' as TabId,
-    })),
-    ...publishedWorkshops.map(w => ({
-      id: `up_w_${w.id}`,
-      type: 'workshop' as const,
-      title: `Workshop scheduled: ${w.title}`,
-      subtitle: `${w.eventDate} at ${w.eventTime} SAST · By ${w.facilitator}`,
-      date: w.publishedAt || w.eventDate || 'Upcoming',
-      tab: 'workshops' as TabId,
-    })),
-  ].slice(0, 5);
 
   return (
     <div className="space-y-10">
@@ -92,44 +72,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </div>
 
-      {/* Auto-generated Recent Updates Feed (Task 1.3) */}
-      {recentUpdates.length > 0 && (
-        <section className="bg-white rounded-[6px] border border-[#E2E8F0] p-4 sm:p-5 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-[4px] bg-blue-100 text-[#255190] flex items-center justify-center">
-                <Bell className="w-3.5 h-3.5" />
-              </div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#255190]">
-                Recent Institutional Updates
-              </h2>
-            </div>
-            <span className="text-[11px] text-slate-400">Live Feed</span>
-          </div>
-
-          <div className="divide-y divide-slate-100">
-            {recentUpdates.map((update) => (
-              <div
-                key={update.id}
-                onClick={() => onNavigate(update.tab)}
-                className="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-50 px-2 rounded-[4px] transition-colors cursor-pointer group"
-              >
-                <div className="space-y-0.5">
-                  <span className="text-xs font-semibold text-slate-900 group-hover:text-[#255190] flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FDB813]"></span>
-                    {update.title}
-                  </span>
-                  <p className="text-[11px] text-slate-500 pl-3">{update.subtitle}</p>
-                </div>
-                <div className="flex items-center gap-2 text-[11px] text-slate-400 pl-3 sm:pl-0">
-                  <span>{update.date}</span>
-                  <ArrowRight className="w-3 h-3 text-[#255190] opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* SECTION: Funding Available and Application Processes (Read-Only) */}
       <section className="space-y-4">
