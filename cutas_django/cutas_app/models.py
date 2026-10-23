@@ -20,6 +20,11 @@ def validate_cv_extension_and_size(value):
     if value.size > 5 * 1024 * 1024:
         raise ValidationError("CV file size exceeds maximum permitted limit (5MB).")
 
+class PublishStatus(models.TextChoices):
+    DRAFT = 'DRAFT', _('Draft')
+    PUBLISHED = 'PUBLISHED', _('Published')
+
+
 class User(AbstractUser):
     class Role(models.TextChoices):
         SCHOLAR = 'SCHOLAR', _('Postgraduate Scholar')
@@ -229,6 +234,7 @@ class FundingOpportunity(models.Model):
     portal_url = models.URLField(blank=True, help_text="External link to funding application portal")
     featured_on_landing = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=10, choices=PublishStatus.choices, default=PublishStatus.PUBLISHED)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -266,6 +272,7 @@ class Workshop(models.Model):
     )
     description = models.TextField()
     category = models.CharField(max_length=100, default='Methodology & Writing')
+    status = models.CharField(max_length=10, choices=PublishStatus.choices, default=PublishStatus.PUBLISHED)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -282,6 +289,7 @@ class InstitutionalContent(models.Model):
     title = models.CharField(max_length=255)
     headline = models.CharField(max_length=350, blank=True)
     body = models.TextField()
+    status = models.CharField(max_length=10, choices=PublishStatus.choices, default=PublishStatus.PUBLISHED)
     last_updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -290,25 +298,13 @@ class InstitutionalContent(models.Model):
 
 
 class AuditLog(models.Model):
-    ACTION_CHOICES = [
-        ('LOGIN', 'User Login'),
-        ('LOGOUT', 'User Logout'),
-        ('REGISTER', 'New Scholar Registration'),
-        ('ACCOUNT_DELETED', 'Scholar Account Deleted'),
-        ('PASSWORD_CHANGE', 'Password Changed'),
-        ('CONTENT_EDIT', 'Institutional Content Edited'),
-        ('CHALLENGE_REVIEW', 'Challenge Status/Resolution Updated'),
-        ('WORKSHOP_CREATE', 'Workshop Added'),
-        ('FUNDING_CREATE', 'Funding Opportunity Added'),
-    ]
-
-    action = models.CharField(max_length=30, choices=ACTION_CHOICES)
+    action = models.CharField(max_length=40, db_index=True)
     actor_username = models.CharField(max_length=150)
-    actor_role = models.CharField(max_length=30)
+    actor_role = models.CharField(max_length=60)
     target_object = models.CharField(max_length=255, blank=True)
     details = models.TextField(blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         ordering = ['-timestamp']
