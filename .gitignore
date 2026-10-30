@@ -1,8 +1,32 @@
+# Dependencies and build output
 node_modules/
-build/
 dist/
+build/
 coverage/
-.DS_Store
-*.log
-.env*
+*.tsbuildinfo
+
+# Environment files (may contain private settings) - only the example is committed
+.env
+.env.*
 !.env.example
+
+# The Django backend lives in its own folder / repository (kept separate on purpose).
+# Never commit a copy of it, its database or its virtual environment from this folder.
+cutas_django/
+postman/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+diff_*.txt
+ersinnoccutas-latest
+
+# Logs, editor and OS files
+*.log
+npm-debug.log*
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

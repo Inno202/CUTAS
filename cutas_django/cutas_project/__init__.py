@@ -1,1 +1,0 @@
-"""CUTAS Django project initialization."""

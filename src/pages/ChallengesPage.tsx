@@ -1,56 +1,45 @@
 import React, { useState } from 'react';
-import { User, Challenge, ChallengeCategory, ChallengeStatus } from '../types';
+import { CheckCircle, Clock, FileDown, Plus, Send, Shield } from 'lucide-react';
+import { challengesApi } from '../api/endpoints';
 import { PageHeader, PageHeaderButton } from '../components/PageHeader';
-import { FileDown, Plus, AlertCircle, CheckCircle, Clock, Shield, Send } from 'lucide-react';
+import { Alert, ErrorBlock, Field, LoadingBlock, Spinner, btnPrimary, btnSecondary, inputClass } from '../components/ui';
+import { CHALLENGE_CATEGORIES, CHALLENGE_STATUS_LABELS } from '../constants';
+import { isAdmin, useAuth } from '../context/AuthContext';
+import { useAction, useAsync } from '../hooks/useAsync';
+import { navigate } from '../router';
+import type { ChallengeCategory, ChallengeStatus } from '../types';
+import { formatDate, formatDateTime } from '../utils/format';
 
-interface ChallengesPageProps {
-  currentUser: User;
-  challenges: Challenge[];
-  onSubmitChallenge: (ch: Omit<Challenge, 'id' | 'userId' | 'scholarName' | 'scholarCategory' | 'status' | 'createdAt'>) => void;
-  onUpdateResolution?: (challengeId: string, status: ChallengeStatus, notes: string) => void;
-  onDownloadPdf: () => void;
-}
+export const STATUS_STYLES: Record<ChallengeStatus, string> = {
+  OPEN: 'bg-amber-100 text-amber-800 border-amber-300',
+  IN_REVIEW: 'bg-blue-100 text-blue-800 border-blue-300',
+  RESOLVED: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+};
 
-export const ChallengesPage: React.FC<ChallengesPageProps> = ({
-  currentUser,
-  challenges,
-  onSubmitChallenge,
-  onUpdateResolution,
-  onDownloadPdf,
-}) => {
-  const [showSubmitForm, setShowSubmitForm] = useState(false);
+const categoryLabel = (c: ChallengeCategory) => CHALLENGE_CATEGORIES.find((x) => x.value === c)?.label ?? c;
+
+export const ChallengesPage: React.FC = () => {
+  const { user } = useAuth();
+  const list = useAsync(() => challengesApi.list(), []);
+  const [showForm, setShowForm] = useState(false);
   const [category, setCategory] = useState<ChallengeCategory>('WRITING');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [submittedMessage, setSubmittedMessage] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const save = useAction();
+  const pdf = useAction();
+  const challenges = list.data ?? [];
 
-  // Filter for scholar: scholars see their own items, admins can see all or their own
-  const visibleChallenges = currentUser.role === 'SCHOLAR'
-    ? challenges.filter(c => c.userId === currentUser.id)
-    : challenges;
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmitChallenge({
-      category,
-      title,
-      description,
-    });
-    setTitle('');
-    setDescription('');
-    setShowSubmitForm(false);
-    setSubmittedMessage(true);
-    setTimeout(() => setSubmittedMessage(false), 4000);
-  };
-
-  const getStatusBadge = (status: ChallengeStatus) => {
-    switch (status) {
-      case 'OPEN':
-        return 'bg-amber-100 text-amber-800 border-amber-300';
-      case 'IN_REVIEW':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'RESOLVED':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+    const created = await save.run(() => challengesApi.create({ category, title, description }));
+    if (created) {
+      list.setData((prev = []) => [created, ...prev]);
+      setTitle('');
+      setDescription('');
+      setShowForm(false);
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 5000);
     }
   };
 
@@ -62,17 +51,14 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
         description="Submit research roadblocks (funding, Turnitin similarity index, thesis writing, lab access, ethics approval) for society leadership resolution."
         actions={
           <>
-            <PageHeaderButton
-              variant="accent"
-              onClick={() => setShowSubmitForm(!showSubmitForm)}
-              icon={<Plus className="w-4 h-4" />}
-            >
-              {showSubmitForm ? 'Close Form' : 'Submit Problem'}
+            <PageHeaderButton variant="accent" onClick={() => { setShowForm(!showForm); save.clear(); }} icon={<Plus className="w-4 h-4" />}>
+              {showForm ? 'Close Form' : 'Submit Problem'}
             </PageHeaderButton>
             <PageHeaderButton
               variant="secondary"
-              onClick={onDownloadPdf}
-              icon={<FileDown className="w-4 h-4" />}
+              onClick={() => pdf.run(() => challengesApi.pdf())}
+              disabled={pdf.busy}
+              icon={pdf.busy ? <Spinner className="w-4 h-4" /> : <FileDown className="w-4 h-4" />}
             >
               Download Challenges Log (PDF)
             </PageHeaderButton>
@@ -80,156 +66,103 @@ export const ChallengesPage: React.FC<ChallengesPageProps> = ({
         }
       />
 
-      {submittedMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-[4px] text-xs flex items-center gap-2">
-          <CheckCircle className="w-4 h-4 text-emerald-600" />
-          <span>Research problem logged successfully. CUTAS mentors and administrators have received the notification.</span>
-        </div>
+      {isAdmin(user) && (
+        <Alert type="info">
+          <span className="flex flex-wrap items-center gap-2">
+            This page shows challenges logged from your own account. The full scholar queue is in the{' '}
+            <button type="button" onClick={() => navigate('admin_dashboard')} className="font-bold text-[#255190] underline inline-flex items-center gap-1 cursor-pointer">
+              <Shield className="w-3.5 h-3.5" /> Administrator Console
+            </button>
+          </span>
+        </Alert>
+      )}
+      {pdf.error && <Alert type="error" onClose={pdf.clear}>{pdf.error}</Alert>}
+      {submitted && (
+        <Alert type="success">Research problem logged. CUTAS administrators can now see it in their review queue.</Alert>
       )}
 
-      {/* Submission Form */}
-      {showSubmitForm && (
-        <div className="bg-slate-50 border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-xs">
-          <h2 className="text-base font-bold text-slate-900 mb-1">Submit a Research Challenge</h2>
-          <p className="text-xs text-slate-500 mb-4">
-            Confidential problem submission routed directly to the CUTAS Project Leaders and Faculty Mentors.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Challenge Category</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as ChallengeCategory)}
-                className="w-full px-3 py-2 border border-slate-300 rounded text-xs bg-white"
-                required
-              >
-                <option value="FUNDING">Funding & Bursary Disbursements</option>
-                <option value="TURNITIN">Turnitin / Plagiarism Similarity Calibration</option>
-                <option value="WRITING">Academic Writing & Thesis Structure</option>
-                <option value="SUPERVISION">Supervision & Advisory Support</option>
-                <option value="LAB_ACCESS">Laboratory Access & Specialized Equipment</option>
-                <option value="ETHICS">Faculty Ethics Board Clearance</option>
-                <option value="DATA_ANALYSIS">Methodology & Statistical Software (R, Jamovi, Python)</option>
-                <option value="OTHER">Other Academic Roadblock</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Problem Subject / Summary</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Brief synopsis of the issue"
-                className="w-full px-3 py-2 border border-slate-300 rounded text-xs bg-white"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Detailed Description & Impact on Postgraduate Milestones</label>
-              <textarea
-                rows={5}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Explain the specific bottleneck, previous actions taken, and what intervention is required from CUTAS leadership..."
-                className="w-full px-3 py-2 border border-slate-300 rounded text-xs bg-white font-sans"
-                required
-              />
-            </div>
-
-            <div className="pt-2 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowSubmitForm(false)}
-                className="px-4 py-2 border border-slate-300 text-slate-700 rounded text-xs font-semibold hover:bg-white cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-[#255190] text-white rounded-[4px] text-xs font-semibold hover:bg-[#183765] transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
-              >
-                <Send className="w-3.5 h-3.5" /> Submit Research Problem
+      {showForm && (
+        <section className="bg-slate-50 border border-[#E2E8F0] rounded-[6px] p-4 sm:p-8 shadow-xs">
+          <h2 className="text-base font-bold text-[#255190] mb-1">Submit a Research Challenge</h2>
+          <p className="text-xs text-slate-500 mb-4">Confidential: only you and the CUTAS administrators can see it.</p>
+          <form onSubmit={submit} className="space-y-4 text-xs">
+            {save.error && <Alert type="error">{save.error}</Alert>}
+            <Field label="Challenge Category" required error={save.errors.category}>
+              {(id) => (
+                <select id={id} value={category} onChange={(e) => setCategory(e.target.value as ChallengeCategory)} className={inputClass}>
+                  {CHALLENGE_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              )}
+            </Field>
+            <Field label="Problem Subject / Summary" required error={save.errors.title}>
+              {(id) => <input id={id} type="text" required maxLength={255} value={title} onChange={(e) => setTitle(e.target.value)}
+                placeholder="Brief synopsis of the issue" className={inputClass} />}
+            </Field>
+            <Field label="Detailed Description & Impact on Your Milestones" required error={save.errors.description}
+              hint={`${description.length.toLocaleString()} / 8,000 characters`}>
+              {(id) => <textarea id={id} rows={6} required maxLength={8000} value={description} onChange={(e) => setDescription(e.target.value)}
+                placeholder="Explain the bottleneck, what you have already tried, and what help you need from CUTAS leadership…" className={`${inputClass} leading-relaxed`} />}
+            </Field>
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <button type="button" onClick={() => setShowForm(false)} className={btnSecondary}>Cancel</button>
+              <button type="submit" disabled={save.busy} className={btnPrimary}>
+                {save.busy ? <Spinner className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />} Submit Research Problem
               </button>
             </div>
           </form>
-        </div>
+        </section>
       )}
 
-      {/* Challenges List */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs text-slate-500 px-1">
-          <span>Showing {visibleChallenges.length} recorded items</span>
-        </div>
-
-        {visibleChallenges.map((ch) => (
-          <div
-            key={ch.id}
-            className="bg-white rounded-[6px] border border-[#E2E8F0] p-6 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
-          >
-            <div>
+      {list.loading && !list.data ? (
+        <LoadingBlock />
+      ) : list.error ? (
+        <ErrorBlock message={list.error} onRetry={list.reload} />
+      ) : (
+        <div className="space-y-4">
+          <div className="text-xs text-slate-500 px-1">Showing {challenges.length} recorded item{challenges.length === 1 ? '' : 's'}</div>
+          {challenges.map((ch) => (
+            <article key={ch.id} className="bg-white rounded-[6px] border border-[#E2E8F0] p-4 sm:p-6 shadow-xs hover:border-slate-300 transition-all">
               <div className="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 gap-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-800 uppercase tracking-wider">{ch.category.replace('_', ' ')}</span>
-                  <span className="text-slate-300">·</span>
-                  <span className="text-slate-500">Logged: {ch.createdAt}</span>
-                  {currentUser.role !== 'SCHOLAR' && (
-                    <>
-                      <span className="text-slate-300">·</span>
-                      <span className="font-semibold text-slate-700">Scholar: {ch.scholarName} ({ch.scholarCategory})</span>
-                    </>
-                  )}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+                  <span className="font-semibold text-slate-800 uppercase tracking-wider">{categoryLabel(ch.category)}</span>
+                  <span className="hidden sm:inline text-slate-300" aria-hidden="true">·</span>
+                  <span className="text-slate-500">Ref #{ch.id} · Logged {formatDate(ch.createdAt)}</span>
                 </div>
-
-                <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-[4px] border ${getStatusBadge(ch.status)}`}>
-                  {ch.status.replace('_', ' ')}
+                <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-[4px] border ${STATUS_STYLES[ch.status]}`}>
+                  {CHALLENGE_STATUS_LABELS[ch.status]}
                 </span>
               </div>
-
-              <h3 className="text-base font-bold text-slate-900 mt-3 mb-2">{ch.title}</h3>
-              <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line mb-4 bg-slate-50/60 p-4 rounded-[4px] border border-slate-100">
+              <h3 className="text-sm sm:text-base font-bold text-[#255190] mt-3 mb-2 break-words">{ch.title}</h3>
+              <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line mb-4 bg-slate-50/60 p-4 rounded-[4px] border border-slate-100 max-w-none break-words">
                 {ch.description}
               </p>
-            </div>
-
-            {/* Official Resolution Block */}
-            {ch.resolutionNotes ? (
-              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-[4px] text-xs space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-emerald-900 flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-700" />
-                    Official Society Resolution & Action Taken:
-                  </span>
-                  {ch.resolvedAt && (
-                    <span className="text-[10px] text-emerald-700">{ch.resolvedAt}</span>
-                  )}
-                </div>
-                <p className="text-emerald-800 leading-relaxed whitespace-pre-line pt-1">
-                  {ch.resolutionNotes}
-                </p>
-                {ch.resolvedBy && (
-                  <div className="text-[10px] text-emerald-600 pt-1">
-                    Resolved by: <b>{ch.resolvedBy}</b>
+              {ch.resolutionNotes ? (
+                <div className={`p-4 rounded-[4px] text-xs space-y-1 border ${ch.status === 'RESOLVED' ? 'bg-emerald-50/70 border-emerald-200' : 'bg-blue-50/60 border-blue-200'}`}>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className={`font-bold flex items-center gap-1.5 ${ch.status === 'RESOLVED' ? 'text-emerald-900' : 'text-blue-900'}`}>
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      {ch.status === 'RESOLVED' ? 'Official Society Resolution & Action Taken' : 'Administrator update'}
+                    </span>
+                    {ch.resolvedAt && <span className="text-[10px] text-emerald-700">{formatDateTime(ch.resolvedAt)}</span>}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-[4px] text-xs text-slate-500 italic flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-amber-600" />
-                <span>Pending review by CUTAS project leader or assigned faculty mentor.</span>
-              </div>
-            )}
-          </div>
-        ))}
-
-        {visibleChallenges.length === 0 && (
-          <div className="bg-white rounded-[6px] border border-[#E2E8F0] p-12 text-center text-xs text-slate-500">
-            No research problems logged. If you encounter roadblocks with Turnitin similarity, equipment, or supervision, click "+ Submit Problem".
-          </div>
-        )}
-      </div>
+                  <p className="leading-relaxed whitespace-pre-line pt-1 text-slate-800 max-w-none break-words">{ch.resolutionNotes}</p>
+                  {ch.resolvedByName && <div className="text-[10px] text-emerald-700 pt-1">Resolved by: <b>{ch.resolvedByName}</b></div>}
+                </div>
+              ) : (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-[4px] text-xs text-slate-500 italic flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                  <span>Pending review by a CUTAS project leader or assigned faculty mentor.</span>
+                </div>
+              )}
+            </article>
+          ))}
+          {challenges.length === 0 && (
+            <div className="bg-white rounded-[6px] border border-[#E2E8F0] p-8 sm:p-12 text-center text-xs text-slate-500">
+              No research problems logged. If you hit roadblocks with Turnitin similarity, equipment, funding or supervision, use "Submit Problem".
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

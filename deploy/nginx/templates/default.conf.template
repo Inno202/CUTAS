@@ -1,0 +1,112 @@
+# CUTAS web front end - nginx site configuration (template).
+# Rendered when the container starts; these placeholders come from the environment (defaults in
+# the Dockerfile): API_UPSTREAM, API_ORIGIN, API_RATE_LIMIT, API_RATE_BURST, TRUSTED_PROXY_CIDR,
+# NGINX_LOCAL_RESOLVERS. Everything written as $name (lower case) is an nginx variable.
+
+# ---- Real visitor address. HTTPS ends at a proxy in front of this container (Caddy, IIS/ARR or
+# the campus load balancer); only that proxy may tell us who the visitor is.
+set_real_ip_from ${TRUSTED_PROXY_CIDR};
+set_real_ip_from 127.0.0.1;
+real_ip_header X-Forwarded-For;
+real_ip_recursive on;
+
+# Believe X-Forwarded-Proto only when the request really came through that proxy.
+geo $realip_remote_addr $cutas_via_proxy {
+    default 0;
+    127.0.0.1 1;
+    ${TRUSTED_PROXY_CIDR} 1;
+}
+map "$cutas_via_proxy:$http_x_forwarded_proto" $cutas_proto {
+    "1:https" https;
+    default   $scheme;
+}
+map $cutas_proto $cutas_hsts {
+    https   "max-age=31536000; includeSubDomains";
+    default "";
+}
+# Fingerprinted build files never change: cache them for a year. Everything else revalidates.
+map $uri $cutas_cache_control {
+    ~^/assets/ "public, max-age=31536000, immutable";
+    default    "no-cache";
+}
+
+# Flood protection per visitor address (generous: a whole campus can share one address).
+limit_req_zone $binary_remote_addr zone=cutas_api:10m rate=${API_RATE_LIMIT};
+limit_req_status 429;
+
+server {
+    listen 8080 default_server;
+    server_name _;
+    server_tokens off;
+    root /usr/share/nginx/html;
+    charset utf-8;
+
+    client_max_body_size 6m;          # 5 MB uploads + form fields (Django enforces the real limits)
+    client_body_timeout 30s;
+    client_header_timeout 15s;
+    send_timeout 60s;
+    keepalive_timeout 30s;
+
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/javascript application/javascript application/json image/svg+xml;
+
+    # Docker's DNS, so a re-created API container is found again without restarting nginx.
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
+    resolver_timeout 5s;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # ---- REST API -> Django (gunicorn). Django adds its own security headers to these responses.
+    location /api/ {
+        limit_req zone=cutas_api burst=${API_RATE_BURST} nodelay;
+        set $cutas_api ${API_UPSTREAM};
+        proxy_pass $cutas_api;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $cutas_proto;
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 90s;
+        proxy_redirect off;
+        # Friendly JSON (not an HTML page) when rate-limited or while the API restarts.
+        error_page 429 = @api_busy;
+        error_page 502 503 504 = @api_down;
+    }
+
+    location @api_busy {
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Retry-After "5" always;
+        return 429 '{"detail":"Too many requests. Please wait a moment and try again."}';
+    }
+
+    location @api_down {
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Retry-After "30" always;
+        return 503 '{"detail":"The CUTAS service is restarting or busy. Please try again in a minute."}';
+    }
+
+    # ---- React single-page app
+    location / {
+        include /etc/nginx/conf.d/snippets/security-headers.conf;
+        try_files $uri /index.html;
+    }
+
+    # Never serve dot-files (.env, .git ...) even if one ends up in the web root.
+    location ~ /\. {
+        return 404;
+    }
+}

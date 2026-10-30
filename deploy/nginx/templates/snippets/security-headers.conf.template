@@ -1,0 +1,12 @@
+# Security headers for the React app (API responses get theirs from Django).
+# The CSP allows only this site's own scripts, styles, fonts and images; API_ORIGIN is added
+# only when the API is hosted on a different domain.
+add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob: ${API_ORIGIN}; connect-src 'self' ${API_ORIGIN}; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-Frame-Options "DENY" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+add_header Cross-Origin-Opener-Policy "same-origin" always;
+add_header Cross-Origin-Resource-Policy "same-origin" always;
+add_header Strict-Transport-Security $cutas_hsts always;
+add_header Cache-Control $cutas_cache_control always;
