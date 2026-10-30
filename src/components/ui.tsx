@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef } from 'react';
+import { PREVIEW_MODE } from '../api/client';
 import { AlertCircle, CheckCircle2, Info, Loader2, RefreshCw, X } from 'lucide-react';
 
 export const inputClass =
@@ -65,7 +66,13 @@ export const LoadingBlock: React.FC<{ label?: string }> = ({ label = 'Loading…
   </div>
 );
 
-export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = ({ message, onRetry }) => (
+export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = ({ message, onRetry }) =>
+  PREVIEW_MODE ? (
+    // Online preview without a server: a calm placeholder instead of an error (the banner explains why).
+    <div className="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-[6px] text-center text-xs text-slate-500" role="status">
+      Live data appears here once the CUTAS server is connected.
+    </div>
+  ) : (
   <div className="p-6 bg-red-50 border border-red-200 rounded-[6px] text-center text-xs text-red-900 space-y-3" role="alert">
     <AlertCircle className="w-6 h-6 text-red-600 mx-auto" aria-hidden="true" />
     <p className="mx-auto">{message}</p>
@@ -75,7 +82,7 @@ export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = (
       </button>
     )}
   </div>
-);
+  );
 
 export const EmptyState: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div className={`${cardClass} p-8 sm:p-12 text-center text-xs text-slate-500 ${className}`}>{children}</div>

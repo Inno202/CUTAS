@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AlertCircle, ChevronDown, Lock, LogOut, Menu, Shield, User as UserIcon, X } from 'lucide-react';
 import wordmark from '../assets/images/cutas-wordmark.svg';
 import { isAdmin, useAuth } from '../context/AuthContext';
-import { navigate } from '../router';
+import { navigate, withBase } from '../router';
 import type { TabId } from '../types';
 import { CATEGORY_LABELS, ROLE_LABELS } from '../constants';
 import { fullName, initials } from '../utils/format';
@@ -142,7 +142,7 @@ export const Header: React.FC<{ activeTab: TabId }> = ({ activeTab }) => {
           <div className="flex items-center justify-between h-16 sm:h-18 gap-3">
             <div className="flex items-center gap-4 xl:gap-6 min-w-0">
               <a
-                href="/"
+                href={withBase('/')}
                 onClick={(e) => {
                   e.preventDefault();
                   handleNavClick('landing');

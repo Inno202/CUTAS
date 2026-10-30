@@ -5,6 +5,7 @@ import { AccessDenied, SignInRequired } from './components/SignInRequired';
 import { Alert, LoadingBlock, btnPrimary } from './components/ui';
 import { isAdmin, useAuth } from './context/AuthContext';
 import { navigate, useRoute } from './router';
+import { PREVIEW_MESSAGE, PREVIEW_MODE } from './api/client';
 import type { TabId } from './types';
 
 import { LandingPage } from './pages/LandingPage';
@@ -89,6 +90,11 @@ export default function App() {
       <Header activeTab={tab} />
 
       <main id="main" className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+        {PREVIEW_MODE && (
+          <div role="status" className="mb-5 rounded-[6px] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+            <b>Preview only.</b> {PREVIEW_MESSAGE}
+          </div>
+        )}
         {notice && tab !== 'login' && (
           <Alert type="warning" onClose={clearNotice} className="mb-4">
             {notice}

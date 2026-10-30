@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, BarChart3, Calendar, Database, FileText, Shield, Target, UserCog, Users, Wallet } from 'lucide-react';
 import { adminApi } from '../api/endpoints';
+import { withBase } from '../router';
 import { PageHeader } from '../components/PageHeader';
 import { isSuperAdmin, useAuth } from '../context/AuthContext';
 import type { AdminOverview } from '../types';
@@ -72,7 +73,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   const select = (id: AdminConsoleSection) => {
     setActive(id);
-    window.history.replaceState({}, '', `/admin#${id}`);
+    window.history.replaceState({}, '', withBase(`/admin#${id}`));
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 

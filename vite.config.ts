@@ -42,6 +42,8 @@ export default defineConfig(({ mode }) => {
   const devProxyTarget = env.DEV_API_PROXY || 'http://127.0.0.1:8000';
 
   return {
+    // "/CUTAS/" when published on GitHub Pages (https://<user>.github.io/CUTAS/), "/" everywhere else.
+    base: env.VITE_BASE_PATH || '/',
     plugins: [react(), tailwindcss(), contentSecurityPolicy(apiBase)],
     resolve: {
       alias: { '@': path.resolve(__dirname, '.') },

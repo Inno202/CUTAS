@@ -136,7 +136,13 @@ async function parseError(res: Response): Promise<ApiError> {
   return new ApiError(res.status, message, data, fieldErrors, code);
 }
 
+/** Online preview without a server (e.g. GitHub Pages): no API calls are made at all. */
+export const PREVIEW_MODE = import.meta.env.VITE_PREVIEW_MODE === 'true';
+export const PREVIEW_MESSAGE =
+  'This is an online preview of the CUTAS website. The CUTAS server is not connected yet, so sign-in and live data are not available.';
+
 async function doFetch(url: string, init: RequestInit): Promise<Response> {
+  if (PREVIEW_MODE) throw new ApiError(0, PREVIEW_MESSAGE);
   try {
     return await fetch(url, { credentials: 'include', cache: 'no-store', ...init });
   } catch {

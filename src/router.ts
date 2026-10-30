@@ -22,6 +22,14 @@ export const ROUTES: Record<Exclude<TabId, 'not_found'>, string> = {
   profile: '/profile',
 };
 
+/** Folder the site is published under: "" normally, "/CUTAS" on GitHub Pages (set by VITE_BASE_PATH). */
+export const BASE_PATH = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+/** Adds the site folder to an app path: withBase('/about') -> '/CUTAS/about' on GitHub Pages. */
+export function withBase(path: string): string {
+  return `${BASE_PATH}${path}` || '/';
+}
+
 const PATH_TO_TAB = new Map<string, TabId>(Object.entries(ROUTES).map(([tab, path]) => [path, tab as TabId]));
 
 export const TITLES: Partial<Record<TabId, string>> = {
@@ -46,7 +54,9 @@ export const TITLES: Partial<Record<TabId, string>> = {
 };
 
 export function pathToTab(pathname: string): TabId {
-  const clean = pathname.replace(/\/+$/, '') || '/';
+  let p = pathname;
+  if (BASE_PATH && (p === BASE_PATH || p.startsWith(`${BASE_PATH}/`))) p = p.slice(BASE_PATH.length);
+  const clean = p.replace(/\/+$/, '') || '/';
   return PATH_TO_TAB.get(clean) ?? 'not_found';
 }
 
@@ -64,7 +74,8 @@ export interface NavigateOptions {
 
 export function navigate(tab: TabId, opts: NavigateOptions = {}) {
   const base = tab === 'not_found' ? '/' : ROUTES[tab];
-  const url = opts.next && opts.next !== 'not_found' ? `${base}?next=${encodeURIComponent(ROUTES[opts.next])}` : base;
+  const path = opts.next && opts.next !== 'not_found' ? `${base}?next=${encodeURIComponent(ROUTES[opts.next])}` : base;
+  const url = withBase(path);
   if (url !== window.location.pathname + window.location.search) {
     window.history[opts.replace ? 'replaceState' : 'pushState']({}, '', url);
     window.dispatchEvent(new PopStateEvent('popstate'));
