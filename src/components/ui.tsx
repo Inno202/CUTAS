@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef } from 'react';
+import { PREVIEW_MODE } from '../api/client';
 import { AlertCircle, CheckCircle2, Info, Loader2, RefreshCw, X } from 'lucide-react';
 
 export const inputClass =
@@ -65,7 +66,13 @@ export const LoadingBlock: React.FC<{ label?: string }> = ({ label = 'Loading…
   </div>
 );
 
-export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = ({ message, onRetry }) => (
+export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = ({ message, onRetry }) =>
+  PREVIEW_MODE ? (
+    // Online preview without a server: a calm placeholder instead of an error (the banner explains why).
+    <div className="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-[6px] text-center text-xs text-slate-500" role="status">
+      Live data appears here once the CUTAS server is connected.
+    </div>
+  ) : (
   <div className="p-6 bg-red-50 border border-red-200 rounded-[6px] text-center text-xs text-red-900 space-y-3" role="alert">
     <AlertCircle className="w-6 h-6 text-red-600 mx-auto" aria-hidden="true" />
     <p className="mx-auto">{message}</p>
@@ -75,7 +82,7 @@ export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = (
       </button>
     )}
   </div>
-);
+  );
 
 export const EmptyState: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div className={`${cardClass} p-8 sm:p-12 text-center text-xs text-slate-500 ${className}`}>{children}</div>
@@ -119,12 +126,16 @@ export const Modal: React.FC<{
 }> = ({ open, title, onClose, children, footer, size = 'md', tone = 'default' }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // Parents usually pass a new onClose function on every render (e.g. on each keystroke). Keep the
+  // latest one in a ref so the focus set-up below runs only when the dialog opens, not while typing.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
       if (e.key === 'Tab' && panelRef.current) {
         const focusables = panelRef.current.querySelectorAll<HTMLElement>(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -153,7 +164,7 @@ export const Modal: React.FC<{
       document.body.style.overflow = overflow;
       previous?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   const width = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl' }[size];

@@ -3,7 +3,7 @@ import { CheckCircle2, Eye, EyeOff, Loader2, Lock } from 'lucide-react';
 import { authApi } from '../api/endpoints';
 import { Alert } from '../components/ui';
 import { errorMessage, fieldErrors } from '../hooks/useAsync';
-import { navigate, queryParam } from '../router';
+import { navigate, queryParam, withBase } from '../router';
 import { AuthCard } from './LoginPage';
 
 const field =
@@ -20,7 +20,7 @@ export const ResetPasswordPage: React.FC = () => {
 
   // Remove the one-time token from the address bar (and browser history) straight away.
   useEffect(() => {
-    if (uid || token) window.history.replaceState({}, '', '/reset-password');
+    if (uid || token) window.history.replaceState({}, '', withBase('/reset-password'));
   }, [uid, token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
