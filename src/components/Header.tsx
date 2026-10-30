@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AlertCircle, ChevronDown, Lock, LogOut, Menu, Shield, User as UserIcon, X } from 'lucide-react';
-import crestImage from '../assets/images/cutas-crest.webp';
+import wordmark from '../assets/images/cutas-wordmark.svg';
 import { isAdmin, useAuth } from '../context/AuthContext';
 import { navigate } from '../router';
 import type { TabId } from '../types';
@@ -149,8 +149,8 @@ export const Header: React.FC<{ activeTab: TabId }> = ({ activeTab }) => {
                 }}
                 className="flex items-center space-x-3 text-left cursor-pointer group flex-shrink-0 min-w-0"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[4px] bg-white p-1 flex items-center justify-center flex-shrink-0 shadow-xs">
-                  <img src={crestImage} alt="" className="w-full h-full object-contain" width={40} height={40} />
+                <div className="h-9 sm:h-10 rounded-[4px] bg-white px-2.5 flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <img src={wordmark} alt="CUTAS" className="h-4 sm:h-5 w-auto" width={92} height={20} />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-white font-semibold text-sm sm:text-base leading-tight tracking-tight truncate">
@@ -342,8 +342,8 @@ export const Header: React.FC<{ activeTab: TabId }> = ({ activeTab }) => {
             >
               <div className="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0 bg-[#255190]">
                 <div className="flex items-center space-x-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-[4px] bg-white p-0.5 flex items-center justify-center shadow-xs flex-shrink-0">
-                    <img src={crestImage} alt="" className="w-full h-full object-contain" width={32} height={32} />
+                  <div className="h-8 rounded-[4px] bg-white px-2 flex items-center justify-center shadow-xs flex-shrink-0">
+                    <img src={wordmark} alt="CUTAS" className="h-4 w-auto" width={74} height={16} />
                   </div>
                   <div className="min-w-0">
                     <span className="font-semibold text-xs block text-white truncate">CUT Academic Society</span>

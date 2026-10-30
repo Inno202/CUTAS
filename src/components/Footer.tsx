@@ -1,5 +1,5 @@
 import React from 'react';
-import crestImage from '../assets/images/cutas-crest.webp';
+import logo from '../assets/images/cutas-logo.svg';
 import { SOCIETY_THEME } from '../constants';
 import { useAuth } from '../context/AuthContext';
 import { navigate, ROUTES } from '../router';
@@ -48,8 +48,8 @@ export const Footer: React.FC = () => {
       <div className="bg-[#183765] border-t-4 border-[#FDB813] border-b border-white/10 px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
-            <div className="w-12 h-12 rounded-[4px] bg-white p-1 flex items-center justify-center flex-shrink-0 shadow-xs">
-              <img src={crestImage} alt="" className="w-full h-full object-contain" width={48} height={48} loading="lazy" />
+            <div className="rounded-[6px] bg-white px-3 py-2.5 flex items-center justify-center flex-shrink-0 shadow-xs">
+              <img src={logo} alt="CUTAS - Central University of Technology Academic Society" className="w-52 h-auto" width={208} height={46} loading="lazy" />
             </div>
             <div>
               <span className="text-[11px] uppercase tracking-wider text-[#FDB813] font-semibold block">

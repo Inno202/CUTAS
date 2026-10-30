@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, Eye, EyeOff, KeyRound, Loader2, Lock, Shield, Smartphone, User as UserIcon } from 'lucide-react';
-import crestImage from '../assets/images/cutas-crest.webp';
+import logo from '../assets/images/cutas-logo.svg';
 import { ApiError } from '../api/client';
 import { Alert } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
@@ -17,9 +17,7 @@ export const AuthCard: React.FC<{ title: string; subtitle: string; children: Rea
   <div className="min-h-[70vh] flex items-center justify-center py-4 sm:py-10">
     <div className={`w-full ${wide ? 'max-w-[480px]' : 'max-w-[440px]'} bg-white rounded-[6px] border border-[#E2E8F0] shadow-xs p-5 sm:p-8 space-y-6`}>
       <div className="text-center space-y-2">
-        <div className="w-14 h-14 mx-auto rounded-[6px] bg-white p-1.5 border border-[#E2E8F0] shadow-xs flex items-center justify-center">
-          <img src={crestImage} alt="CUTAS crest" className="w-full h-full object-contain" width={56} height={56} />
-        </div>
+        <img src={logo} alt="CUTAS - Central University of Technology Academic Society" className="w-60 sm:w-64 h-auto mx-auto mb-3" width={256} height={57} />
         <h1 className="text-xl sm:text-2xl font-semibold text-[#255190]">{title}</h1>
         <p className="text-xs text-slate-500 mx-auto">{subtitle}</p>
       </div>
