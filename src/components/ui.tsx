@@ -119,12 +119,16 @@ export const Modal: React.FC<{
 }> = ({ open, title, onClose, children, footer, size = 'md', tone = 'default' }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // Parents usually pass a new onClose function on every render (e.g. on each keystroke). Keep the
+  // latest one in a ref so the focus set-up below runs only when the dialog opens, not while typing.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
       if (e.key === 'Tab' && panelRef.current) {
         const focusables = panelRef.current.querySelectorAll<HTMLElement>(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -153,7 +157,7 @@ export const Modal: React.FC<{
       document.body.style.overflow = overflow;
       previous?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   const width = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl' }[size];
