@@ -20,7 +20,7 @@ export const FundingPage: React.FC = () => {
         eyebrow="BURSARIES, GRANTS & FELLOWSHIPS"
         title="Funding Available and Application Processes"
         description="National Research Foundation (NRF) calls, CUT postgraduate bursaries, and international research mobility grants."
-        actions={isAdmin(user) ? <ManageInConsole /> : undefined}
+        actions={isAdmin(user) ? <ManageInConsole section="funding" /> : undefined}
       />
 
       {loading && !data ? (

@@ -80,7 +80,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-800 font-sans antialiased w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white text-slate-800 font-sans antialiased w-full overflow-x-clip">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:bg-white focus:text-[#255190] focus:px-3 focus:py-2 focus:rounded focus:shadow"

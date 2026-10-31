@@ -24,7 +24,7 @@ export const LeadersPage: React.FC = () => {
         eyebrow="SOCIETY GOVERNANCE & STEWARDSHIP"
         title={page?.title ?? 'Project Leaders and Society Administrators'}
         description={page?.headline}
-        actions={isAdmin(user) ? <ManageInConsole /> : undefined}
+        actions={isAdmin(user) ? <ManageInConsole section="content" /> : undefined}
       />
 
       {page?.body && (

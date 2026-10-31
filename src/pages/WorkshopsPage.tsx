@@ -20,7 +20,7 @@ export const WorkshopsPage: React.FC = () => {
         eyebrow="ACADEMIC CAPACITY DEVELOPMENT"
         title="Workshops and Seminars"
         description="Specialised colloquiums, thesis writing masterclasses, DHET publishing bootcamps, and research methodology training."
-        actions={isAdmin(user) ? <ManageInConsole /> : undefined}
+        actions={isAdmin(user) ? <ManageInConsole section="workshops" /> : undefined}
       />
 
       <div role="tablist" aria-label="Workshop period" className="inline-flex p-1 bg-slate-100 rounded-[6px] border border-slate-200">

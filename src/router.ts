@@ -70,13 +70,15 @@ export function safeNext(next: string | null): TabId | null {
 export interface NavigateOptions {
   next?: TabId;
   replace?: boolean;
+  /** Section on the page, e.g. navigate('admin_dashboard', { hash: 'content' }) -> /admin#content */
+  hash?: string;
 }
 
 export function navigate(tab: TabId, opts: NavigateOptions = {}) {
   const base = tab === 'not_found' ? '/' : ROUTES[tab];
   const path = opts.next && opts.next !== 'not_found' ? `${base}?next=${encodeURIComponent(ROUTES[opts.next])}` : base;
-  const url = withBase(path);
-  if (url !== window.location.pathname + window.location.search) {
+  const url = withBase(path) + (opts.hash ? `#${opts.hash}` : '');
+  if (url !== window.location.pathname + window.location.search + window.location.hash) {
     window.history[opts.replace ? 'replaceState' : 'pushState']({}, '', url);
     window.dispatchEvent(new PopStateEvent('popstate'));
   }

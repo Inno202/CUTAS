@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Award as AwardIcon, BookOpen, Calendar, CheckCircle2, Clock, MapPin, Shield, Users, Wallet } from 'lucide-react';
+import { ArrowRight, Award as AwardIcon, Calendar, Clock, MapPin, Shield } from 'lucide-react';
 import heroCampusImage from '../assets/images/cutas-hero.webp';
 import { publicApi } from '../api/endpoints';
 import { ErrorBlock } from '../components/ui';
@@ -23,20 +23,12 @@ export const LandingPage: React.FC = () => {
   const { data, error, loading, reload } = useAsync(() => publicApi.landing(), []);
   const admin = isAdmin(user);
 
-  const stats = data
-    ? [
-        { label: 'Registered scholars', value: data.stats.scholars, icon: Users },
-        { label: 'Publications recorded', value: data.stats.publications, icon: BookOpen },
-        { label: 'Challenges resolved', value: data.stats.resolvedChallenges, icon: CheckCircle2 },
-        { label: 'Open funding calls', value: data.stats.activeFundingCalls, icon: Wallet },
-      ]
-    : [];
 
-  const ManageButton = () =>
+  const ManageButton = ({ section }: { section: string }) =>
     admin ? (
       <button
         type="button"
-        onClick={() => navigate('admin_dashboard')}
+        onClick={() => navigate('admin_dashboard', { hash: section })}
         className="text-xs text-[#255190] hover:underline font-semibold flex items-center gap-1 py-1.5 px-2.5 rounded-[4px] bg-blue-50 border border-blue-200 cursor-pointer"
       >
         <Shield className="w-3 h-3 text-[#255190]" />
@@ -61,32 +53,11 @@ export const LandingPage: React.FC = () => {
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-white mb-3 leading-tight">
             Central University of Technology Academic Society
           </h1>
-          <div className="p-3 bg-white/10 backdrop-blur-xs rounded-[4px] border-l-4 border-[#FDB813] mb-3 max-w-2xl">
+          <div className="p-3 bg-white/10 backdrop-blur-xs rounded-[4px] border-l-4 border-[#FDB813] max-w-2xl">
             <p className="text-xs sm:text-sm font-serif italic text-amber-100 leading-relaxed">"{SOCIETY_THEME}"</p>
           </div>
-          <p className="text-slate-200 text-xs sm:text-sm leading-relaxed max-w-2xl">
-            {data?.intro?.body ||
-              'A scholar-led academic society fostering rigorous inquiry, peer thesis review, DHET-accredited publication outputs, competitive national funding, and institutional challenge resolution.'}
-          </p>
         </div>
       </section>
-
-      {/* Society at a glance */}
-      {data && (
-        <section aria-label="Society at a glance" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {stats.map(({ label, value, icon: Icon }) => (
-            <div key={label} className="bg-white rounded-[6px] border border-[#E2E8F0] p-3 sm:p-4 shadow-xs flex items-center gap-3">
-              <div className="w-9 h-9 rounded-[4px] bg-blue-50 text-[#255190] flex items-center justify-center flex-shrink-0">
-                <Icon className="w-4 h-4" aria-hidden="true" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-lg sm:text-xl font-bold text-slate-900 leading-none">{value.toLocaleString('en-ZA')}</div>
-                <div className="text-[11px] text-slate-500 mt-1 leading-tight">{label}</div>
-              </div>
-            </div>
-          ))}
-        </section>
-      )}
 
       {error && <ErrorBlock message={error} onRetry={reload} />}
 
@@ -110,7 +81,7 @@ export const LandingPage: React.FC = () => {
             >
               View Full Funding Catalogue <ArrowRight className="w-3.5 h-3.5" />
             </button>
-            <ManageButton />
+            <ManageButton section="funding" />
           </div>
         </div>
 
@@ -169,7 +140,7 @@ export const LandingPage: React.FC = () => {
             >
               All Workshops <ArrowRight className="w-3.5 h-3.5" />
             </button>
-            <ManageButton />
+            <ManageButton section="workshops" />
           </div>
         </div>
 

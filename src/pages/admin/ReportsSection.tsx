@@ -21,7 +21,7 @@ export const ReportsSection: React.FC = () => {
   return (
     <SectionCard
       title="Annual Challenges & Resolutions Report"
-      description="What scholars struggled with this year and how each problem was resolved. Download the formal PDF for Senate or a CSV for Excel."
+      description="What scholars struggled with this year and how each problem was resolved. Download the formal PDF for Senate, or the Excel workbook (summary, by category, by month and every challenge in detail)."
       actions={
         <label className="flex items-center gap-2 text-xs">
           <span className="font-semibold text-slate-700">Year</span>
@@ -35,8 +35,8 @@ export const ReportsSection: React.FC = () => {
         <button type="button" onClick={() => pdf.run(() => adminApi.annualReportPdf(year))} disabled={pdf.busy} className={btnPrimary}>
           {pdf.busy ? <Spinner className="w-3.5 h-3.5" /> : <FileDown className="w-3.5 h-3.5 text-[#FDB813]" />} Download {year} report (PDF)
         </button>
-        <button type="button" onClick={() => csv.run(() => adminApi.annualReportCsv(year))} disabled={csv.busy} className={btnSecondary}>
-          {csv.busy ? <Spinner className="w-3.5 h-3.5" /> : <FileSpreadsheet className="w-3.5 h-3.5" />} Export {year} (CSV / Excel)
+        <button type="button" onClick={() => csv.run(() => adminApi.annualReportXlsx(year))} disabled={csv.busy} className={btnSecondary}>
+          {csv.busy ? <Spinner className="w-3.5 h-3.5" /> : <FileSpreadsheet className="w-3.5 h-3.5" />} Download {year} workbook (Excel)
         </button>
       </div>
       {(pdf.error || csv.error) && <Alert type="error">{pdf.error || csv.error}</Alert>}
@@ -100,7 +100,7 @@ export const ReportsSection: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              {d.resolvedItems.length > 50 && <p className="text-[11px] text-slate-500 mt-2">Showing 50 of {d.resolvedItems.length}. The PDF and CSV include all of them.</p>}
+              {d.resolvedItems.length > 50 && <p className="text-[11px] text-slate-500 mt-2">Showing 50 of {d.resolvedItems.length}. The PDF and Excel workbook include all of them.</p>}
             </div>
           )}
         </div>

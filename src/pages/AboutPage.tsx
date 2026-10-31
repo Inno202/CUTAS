@@ -10,10 +10,11 @@ import { useAsync } from '../hooks/useAsync';
 import { navigate } from '../router';
 import { formatDateTime } from '../utils/format';
 
-export const ManageInConsole: React.FC = () => (
+/** Opens the administrator console directly on the section that manages this page. */
+export const ManageInConsole: React.FC<{ section: string }> = ({ section }) => (
   <button
     type="button"
-    onClick={() => navigate('admin_dashboard')}
+    onClick={() => navigate('admin_dashboard', { hash: section })}
     className="text-xs text-[#255190] hover:underline font-semibold flex items-center gap-1.5 py-1.5 px-2.5 rounded-[4px] bg-blue-50 border border-blue-200 cursor-pointer"
   >
     <Shield className="w-3.5 h-3.5 text-[#255190]" />
@@ -40,7 +41,7 @@ export const AboutPage: React.FC = () => {
         <PageHeader
           eyebrow="INSTITUTIONAL IDENTITY & MANDATE"
           title="About CUT Academic Society"
-          actions={isAdmin(user) ? <ManageInConsole /> : undefined}
+          actions={isAdmin(user) ? <ManageInConsole section="content" /> : undefined}
         />
         <EmptyState>The About page has not been published yet. Please check back soon.</EmptyState>
       </div>
@@ -53,7 +54,7 @@ export const AboutPage: React.FC = () => {
         eyebrow="INSTITUTIONAL IDENTITY & MANDATE"
         title={content.title}
         description={content.headline}
-        actions={isAdmin(user) ? <ManageInConsole /> : undefined}
+        actions={isAdmin(user) ? <ManageInConsole section="content" /> : undefined}
       />
       <article className="bg-white rounded-[6px] border border-[#E2E8F0] p-5 sm:p-8 shadow-xs space-y-6">
         <div className="p-4 bg-amber-50/70 rounded-[4px] border-l-4 border-[#FDB813] text-xs text-amber-950 font-medium italic">

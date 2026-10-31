@@ -152,8 +152,8 @@ export const adminApi = {
   annualReport: (year: number) => api.get<AnnualReport>('/admin/reports/annual/', { year }),
   annualReportPdf: (year: number) =>
     downloadFile('GET', '/admin/reports/annual/pdf/', `CUTAS_Annual_Report_${year}.pdf`, { query: { year } }),
-  annualReportCsv: (year: number) =>
-    downloadFile('GET', '/admin/reports/annual/csv/', `CUTAS_Challenges_${year}.csv`, { query: { year } }),
+  annualReportXlsx: (year: number) =>
+    downloadFile('GET', '/admin/reports/annual/xlsx/', `CUTAS_Annual_Challenges_Report_${year}.xlsx`, { query: { year } }),
   auditLogs: (params: { action?: string; actor?: string; search?: string; since?: string; until?: string; page?: number }) =>
     api.get<Paginated<AuditLogItem>>('/admin/audit-logs/', params),
   exportData: (password: string, code: string) =>

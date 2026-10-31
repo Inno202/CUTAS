@@ -137,7 +137,6 @@ export const Header: React.FC<{ activeTab: TabId }> = ({ activeTab }) => {
   return (
     <>
       <header className="w-full bg-[#255190] text-white shadow-sm sticky top-0 z-40 select-none">
-        <div className="h-[6px] w-full bg-[#FDB813]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 gap-3">
             <div className="flex items-center gap-4 xl:gap-6 min-w-0">

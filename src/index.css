@@ -22,7 +22,7 @@
 @layer base {
   html {
     font-size: 14px;
-    overflow-x: hidden;
+    overflow-x: clip;   /* "hidden" would stop the header from staying pinned (position: sticky) */
     max-width: 100vw;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
@@ -46,7 +46,7 @@
     color: var(--cut-text);
     background-color: var(--cut-bg);
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;   /* "hidden" would stop the header from staying pinned (position: sticky) */
     max-width: 100vw;
     min-width: 320px;
     line-height: 1.75;
