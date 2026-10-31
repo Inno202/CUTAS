@@ -68,24 +68,6 @@ export const LandingPage: React.FC = () => {
             {data?.intro?.body ||
               'A scholar-led academic society fostering rigorous inquiry, peer thesis review, DHET-accredited publication outputs, competitive national funding, and institutional challenge resolution.'}
           </p>
-          {!user && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => navigate('register')}
-                className="h-10 px-4 rounded-[4px] bg-[#FDB813] hover:bg-[#e5a610] text-slate-900 font-bold text-xs cursor-pointer"
-              >
-                Join as a scholar
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('login')}
-                className="h-10 px-4 rounded-[4px] border border-white/60 hover:bg-white/10 text-white font-semibold text-xs cursor-pointer"
-              >
-                Sign in
-              </button>
-            </div>
-          )}
         </div>
       </section>
 

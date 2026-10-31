@@ -67,14 +67,14 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('login')}
                 className="h-10 px-4 rounded-[4px] border border-white/40 hover:border-white text-white font-semibold text-xs transition-colors cursor-pointer"
               >
-                Sign in to Portal
+                Sign in
               </button>
               <button
                 type="button"
                 onClick={() => navigate('register')}
                 className="h-10 px-4 rounded-[4px] bg-[#FDB813] hover:bg-[#e5a610] text-slate-900 font-bold text-xs transition-colors cursor-pointer shadow-xs"
               >
-                Register as Scholar
+                Register
               </button>
             </div>
           )}
